@@ -4,6 +4,7 @@ const http = require("http");
 const cors = require("cors");
 const {Server} = require("socket.io");
 const mysql = require('mysql');
+const Partita = require("./partita.js");
 
 app.use(cors());
 
@@ -18,6 +19,7 @@ const io = new Server(server, {
 var single = [];
 var multi = [];
 var friend = [];
+var partite = [];
 
 io.on("connection", (socket) =>{
     console.log(socket.id);
@@ -26,15 +28,30 @@ io.on("connection", (socket) =>{
 
       switch (mode) {
         case "friend": friend.push(socket.id); break;
-        case "single": single.push(socket.id); break;
+        case "single": {
+          single.push(socket.id);
+          var tmp = new Partita(socket.id, "server")
+          partite.push(tmp)
+          //console.log({tmp})
+          
+          console.log(tmp.getMazzo().getMano())
+          socket.emit("partitaIniziata", tmp, tmp.getMazzo().getMano())
+          break;
+          
+        }
         case "multi": multi.push(socket.id); break;
       }
+
       
     })
+
+
 
     socket.on("disconnect", () =>{
       console.log("user disconnected ", socket.id);
     })
+
+
 })
 
 
