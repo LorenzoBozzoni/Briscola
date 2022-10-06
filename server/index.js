@@ -3,7 +3,6 @@ const app = express();
 const http = require("http");
 const cors = require("cors");
 const {Server} = require("socket.io");
-const mysql = require('mysql');
 const Partita = require("./partita.js");
 const {MongoClient} = require("mongodb");
 const { stringify } = require("querystring");
@@ -46,8 +45,9 @@ io.on("connection", (socket) =>{
       console.log("email:",email)
       console.log("password:",password)
       if (accessMode === "signup"){
+        const selectResult = await collection.findOne({user: email});
         const insertResult = collection.insertOne({user: email, password: password});      // tolto async --> AGGIUNGERE HASH!
-        if (insertResult)
+        if (insertResult && selectResult == null)      // se riesce l'inserimento e l'username non è già usato beme
           socket.emit("accessOutcome", true);
         else 
           socket.emit("accessOutcome", false);
@@ -57,35 +57,17 @@ io.on("connection", (socket) =>{
         // login
         const selectResult = await collection.findOne({user: email, password: password});
         console.log("selectResult: ", selectResult)
-        if (selectResult)
+        if (selectResult != null){  
+          console.log("LOGIN TRUE")
           socket.emit("accessOutcome", true);
-        else 
-          socket.emit("accessOutcome", false);   
-      }
-    })
-
-    /*
-    socket.on("startGame", (mode) => {
-
-      switch (mode) {
-        case "friend": friend.push(socket.id); break;
-        case "single": {
-          single.push(socket.id);
-          var tmp = new Partita(socket.id, "server")
-          partite.push(tmp)
-          //console.log({tmp})
-          
-          console.log(tmp.getMazzo().getMano())
-          socket.emit("partitaIniziata", tmp, tmp.getMazzo().getMano())
-          break;
-          
+        } else { 
+          socket.emit("accessOutcome", false);
+          console.log("LOGIN FALSE")   
         }
-        case "multi": multi.push(socket.id); break;
       }
-
-      
     })
-    */
+
+
 
     socket.on("disconnect", () =>{
       console.log("user disconnected ", socket.id);
@@ -99,23 +81,4 @@ server.listen(3001, () => {
 });
 
 
-// Database
-const connection = mysql.createConnection({
-  host: '127.0.0.1',  // non bisogna mettere la porta
-  user: 'root',
-  password: 'root',
-  database: 'sailingclub'
-});
 
-connection.connect((err) => {
-  if (err) console.log(err);
-  console.log('Connected!');
-});
-
-/*
-connection.query('SELECT * FROM boats', function(err, rows, fields) 
-{
-  if (err) throw err;
-  console.log(rows[1]);
-});
-*/
