@@ -6,7 +6,7 @@ const {Server} = require("socket.io");
 const Partita = require("./partita.js");
 const {MongoClient} = require("mongodb");
 const { stringify } = require("querystring");
-
+const { instrument } = require("@socket.io/admin-ui"); 
 
 app.use(cors());
 
@@ -22,8 +22,11 @@ run().catch(err => console.log("Errore connessione: " + err))
 const server = http.createServer(app);
 const io = new Server(server, {
     cors : {
-        origin : ["http://localhost:3000","http://localhost:3001"],
-        methods : ["GET", "HEAD", "OPTIONS", "POST", "PUT", "DELETE"]    // methods accepted
+        origin : ["https://admin.socket.io/", "http://localhost:3000","http://localhost:3001"],
+        methods : ["GET", "HEAD", "OPTIONS", "POST", "PUT", "DELETE"],    // methods accepted
+        //transports: ['websocket']
+        credentials : true,
+        allowedHeaders: ["Access-Control-Allow-Origin"]
     }
 })
 
@@ -36,43 +39,47 @@ const db = mongoClient.db("Briscola");
 const collection = db.collection('Briscola');
 
 
+var socket;
 
-
+// APERTURA CONNESSIONE CON IL CLIENT
 io.on("connection", (socket) =>{
     console.log(socket.id);
-    socket.on("access", async (accessMode, email, password) => {      // async qua per aspettare risultato query mongodb
-      console.log("accessMode:",accessMode)
-      console.log("email:",email)
-      console.log("password:",password)
-      if (accessMode === "signup"){
-        const selectResult = await collection.findOne({user: email});
-        const insertResult = collection.insertOne({user: email, password: password});      // tolto async --> AGGIUNGERE HASH!
-        if (insertResult && selectResult == null)      // se riesce l'inserimento e l'username non è già usato beme
-          socket.emit("accessOutcome", true);
-        else 
-          socket.emit("accessOutcome", false);
 
-        //console.log('Inserted documents =>', insertResult);
-      }else{
-        // login
-        const selectResult = await collection.findOne({user: email, password: password});
-        console.log("selectResult: ", selectResult)
-        if (selectResult != null){  
-          console.log("LOGIN TRUE")
-          socket.emit("accessOutcome", true);
-        } else { 
-          socket.emit("accessOutcome", false);
-          console.log("LOGIN FALSE")   
-        }
+  // RICHIESTA CLIENT PER LOGIN/SIGNUP
+  socket.on("access", async (accessMode, email, password) => {      // async qua per aspettare risultato query mongodb
+    console.log("accessMode:",accessMode)
+    console.log("email:",email)
+    console.log("password:",password)
+    if (accessMode === "signup"){
+      const selectResult = await collection.findOne({user: email});
+      const insertResult = collection.insertOne({user: email, password: password});      // tolto async --> AGGIUNGERE HASH!
+      if (insertResult && selectResult == null)      // se riesce l'inserimento e l'username non è già usato beme
+        socket.emit("accessOutcome", true);
+      else 
+        socket.emit("accessOutcome", false);
+
+      //console.log('Inserted documents =>', insertResult);
+    }else{
+      // login
+      const selectResult = await collection.findOne({user: email, password: password});
+      console.log("selectResult: ", selectResult)
+      if (selectResult != null){ 
+        socket.emit("accessOutcome", true); 
+        console.log("LOGIN TRUE")
+      } else { 
+        socket.emit("accessOutcome", false);
+        console.log("LOGIN FALSE")   
       }
-    })
+    }
+  })
 
 
-
-    socket.on("disconnect", () =>{
-      console.log("user disconnected ", socket.id);
-    })
+  // PER LA DISCONNESSIONE
+  socket.on("disconnect", () =>{
+    console.log("user disconnected ", socket.id);
+  })
 })
+
 
 
 
@@ -81,4 +88,4 @@ server.listen(3001, () => {
 });
 
 
-
+instrument(io, {auth: false})
