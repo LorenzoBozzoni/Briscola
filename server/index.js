@@ -38,9 +38,6 @@ var partite = [];
 const db = mongoClient.db("Briscola");
 const collection = db.collection('Briscola');
 
-
-var socket;
-
 // APERTURA CONNESSIONE CON IL CLIENT
 io.on("connection", (socket) =>{
     console.log(socket.id);
@@ -88,4 +85,6 @@ server.listen(3001, () => {
 });
 
 
+// Serve per il pannello di controllo ma non riesco a implementarlo 
+// TODO: implementare pannello per controllo socket connesse al server
 instrument(io, {auth: false})
