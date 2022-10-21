@@ -8,17 +8,22 @@ import {InitialPage}  from './components/InitialPage.js';
 import {LoginPage}  from './components/LoginPage.js';
 import {Routes, Route} from 'react-router-dom';
 
+// Dettagli transport non so se sono corretti, sono per l'admin panel teoricamente ma non va
+
+
 function App() {
   // TODO: fare in modo che le pagine non iniziali non siano raggiungibili tramire url nel browser
   return (
     <>
-      <Routes> 
-        <Route path="/" element={<LoginPage/>} />
-        <Route path="/selectGame" element={<InitialPage/>} />
-        <Route path="/partita" element={<GameField/>}  />
-      </Routes>
-    </>
+    <Routes> 
+      <Route path="/" element={<LoginPage/>} />
+      <Route path="selectGame" element={<InitialPage/>} />
+      <Route path="selectGame/partita" element={<GameField/>}  />
+    </Routes>
+  </>
   );
 }
 
 export default App;
+
+

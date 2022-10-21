@@ -1,18 +1,68 @@
 import React, {Component} from 'react'
-import {access} from '../index.js'
 import Sfondo1 from '../Images/SfondoIniziale.jpg';
+import { io, Socket, socketClient } from 'socket.io-client'
+
+//import Spinner from "./Spinner.js"
+
+// messo qua e importato da altre parti perchè pare essere la prima pagina compilata
+export const socket = io('http://localhost:3001',
+{
+    transports: ['websocket', 'polling', 'flashsocket'],
+    withCredentials: false
+})
+
+
 
 export class LoginPage extends Component {
   state = {
-    visibility: "hidden",
+    visibilityTextBox: "hidden",
+    visibilitySpinner: "hidden",
     access: "login"
     }  
 
-    switchAccess(){
-        if (this.state.visibility === "hidden")
-            this.setState({visibility:"visible", access:"signup"})
+    /*
+    switchSpinnerState(){
+        if (this.state.visibilitySpinner === "hidden")
+            this.setState({visibilitySpinner:"visible"})
         else            
-            this.setState({visibility:"hidden", access:"login"})   
+            this.setState({visibilitySpinner:"hidden"})   
+    }
+    */
+
+    access(accessType){
+        // accessType può essere "login" o "signup"
+        window.alert("Nel metodo di accesso");
+        this.setState({visibilitySpinner:"visible"})    // switch
+        if (!socket.connected){
+          socket.on('connect', () => {
+            window.alert(`Client connesso con id ${socket.id}`)       // connessione necessaria col server
+          })
+        }else{
+          var email = document.getElementById("exampleInputEmail1").value;
+          var password = document.getElementById("exampleInputPassword1").value;
+          socket.emit('access', accessType, email, password); 
+          window.alert("Evento accesso creato")
+        }
+    
+
+        socket.on('accessOutcome', (accessOutcome) => {
+            window.alert("esito: " + accessOutcome);
+            window.alert("Ricezione evento accesso: " + accessOutcome);
+            this.setState({visibilitySpinner:"hidden"})  // switch
+            if (!accessOutcome) {
+            //document.getElementById("").setAttribute()
+            window.alert("Autenticazione fallita");
+            } else {
+            document.location.href = document.location + "selectGame"; // ci si sposta nella pagina per selezionare il tipo di partita
+            window.alert("Autenticazione riuscita");
+            }
+        })
+    }
+    switchAccess(){
+        if (this.state.visibilityTextBox === "hidden")
+            this.setState({visibilityTextBox:"visible", access:"signup"})
+        else            
+            this.setState({visibilityTextBox:"hidden", access:"login"})   
 
     }
   render(){
@@ -34,7 +84,7 @@ export class LoginPage extends Component {
                                 <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
                                 <input type="password" className="form-control" id="exampleInputPassword1"></input>
                             </div>
-                            <div className="mb-3" style={{visibility:this.state.visibility}}>
+                            <div className="mb-3" style={{visibility:this.state.visibilityTextBox}}>
                                 <label htmlFor="exampleInputPassword2" className="form-label">Write password again</label>
                                 <input type="password" className="form-control" id="exampleInputPassword2"></input>
                             </div>
@@ -42,15 +92,15 @@ export class LoginPage extends Component {
                                 <input type="checkbox" className="form-check-input" id="exampleCheck1"></input>
                                 <label className="form-check-label" htmlFor="exampleCheck1">Check me out</label>
                             </div>
-                            <button type="button" className="btn btn-primary" onClick={() => access(this.state.access)}>{this.state.access}</button>
+                            <button type="button" className="btn btn-primary" onClick={() => this.access(this.state.access)}>{this.state.access}</button>
                             </form>
                             <div className="form-check form-switch">
                                 <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Login</label>
                                 <input className="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" onClick={() => this.switchAccess()}></input>     
                                 <label className="form-check-label" htmlFor="flexSwitchCheckDefault">Signup</label>
                             </div>
-                            <div className="spinner-border text-primary" role="status" id="spinner" style={{visibility:"hidden"}}>
-                                <span className="visually-hidden">Loading...</span>
+                            <div className="spinner-border text-primary" role="status" id="spinner" style={{visibility:this.state.visibilitySpinner}}>
+                                <span className="visually-hidden"  style={{visibility:this.state.visibilitySpinner}}>Loading...</span>
                             </div>
                         </div>
                     </div>
@@ -88,3 +138,41 @@ export class LoginPage extends Component {
       )
   }
 }
+
+
+/*
+// FUNZIONE PER MANDARE RICHIESTA LOGIN/SIGNUP AL SERVER
+function access(accessType){
+    // accessType può essere "login" o "signup"
+    window.alert("Nel metodo di accesso");
+    switchSpinnerState()
+    if (!socket.connected){
+      socket.on('connect', () => {
+        window.alert(`Client connesso con id ${socket.id}`)       // connessione necessaria col server
+      })
+    }else{
+      var email = document.getElementById("exampleInputEmail1").value;
+      var password = document.getElementById("exampleInputPassword1").value;
+      socket.emit('access', accessType, email, password); 
+      window.alert("Evento accesso creato")
+    }
+  }
+*/
+  
+
+/*
+// PRELEVA IL RISULTATO DEL LOGIN/SIGNUP
+socket.on('accessOutcome', (accessOutcome) => {
+    window.alert("esito: " + accessOutcome);
+    window.alert("Ricezione evento accesso: " + accessOutcome);
+    switchSpinnerState()
+    if (!accessOutcome) {
+      //document.getElementById("").setAttribute()
+      window.alert("Autenticazione fallita");
+    } else {
+      document.location.href = document.location + "selectGame"; // ci si sposta nella pagina per selezionare il tipo di partita
+      window.alert("Autenticazione riuscita");
+    }
+  })
+*/
+

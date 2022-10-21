@@ -1,12 +1,11 @@
 import React from 'react'
-import {cartaGiocata} from '../index.js'
 import {Navbar} from './Navbar.js'
 import 'bootstrap/dist/css/bootstrap.css';
-
+import {socket} from "./LoginPage.js"
 
 export function GameField() {
   const handleClick = event => {
-    cartaGiocata(event.currentTarget.id);
+    cartaGiocata(event.currentTarget.id);      // Metodo serve per sapere quale elemento ha passato attivato evento click (non si riesce direttamente dall'elemento)
   };
   return (
     <>
@@ -30,4 +29,12 @@ export function GameField() {
   </div>
   </>
   )
+}
+
+
+function cartaGiocata(id){
+  window.alert(id);
+  if (socket.connected){    // verifichiamo di essere connessi prima di inviare il click
+    socket.emit("cartaGiocata", )
+  }
 }
