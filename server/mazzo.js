@@ -48,7 +48,7 @@ class Mazzo {
                     default: 
                         valore = 0;
                 }
-                ImagePath = "../src/Images/Piacentine/"+(j+(i*10)) + ".jpg"
+                ImagePath = "../Images/Piacentine/"+(j+(i*10)) + ".jpg"
                 this.mazzo[(j+(i*10))] = new Carta(valore, j, seme, false, ImagePath)       // di default non impostiamo una briscola
             }
         }

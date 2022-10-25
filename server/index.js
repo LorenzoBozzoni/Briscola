@@ -95,10 +95,18 @@ io.on("connection", (socket) =>{
         single.push(socket.id);
         var tmp = new Partita(socket.id, "server")    // Creiamo subito una nuova partita
         partite.push(tmp)
+        console.log(JSON.stringify(partite))
         //console.log({tmp})
   
         console.log(tmp.getMazzo().getMano())
-        socket.emit("partitaIniziata", tmp, tmp.getMazzo().getMano())
+        /* 
+        // timer per debug
+        var somma = 0;
+        for (let index = 0; index < 1000; index++) {
+            somma += index/100
+        }
+        */
+        socket.emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()))
         break;
       }
       case "multi": {
@@ -108,8 +116,8 @@ io.on("connection", (socket) =>{
         else {
           // Se c'è già qualcuno nella waiting room viene associato
           multi.reverse().pop()
-          socket.emit("iniziaPartita", )    // viene rimosso
-          socket.emit("inizioPartita",)
+          //socket.emit("partitaIniziata", )    // viene rimosso
+          //socket.emit("partitaIniziata",)
         }
 
         

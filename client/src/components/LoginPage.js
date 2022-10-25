@@ -1,8 +1,10 @@
 import React, {Component} from 'react'
-import Sfondo1 from '../Images/SfondoIniziale.jpg';
-import { io, Socket, socketClient } from 'socket.io-client'
+//import Sfondo1 from 'Images/SfondoIniziale.jpg';
+import { io } from 'socket.io-client'
 
 //import Spinner from "./Spinner.js"
+
+const Sfondo1 = require("../Images/SfondoIniziale.jpg")
 
 // messo qua e importato da altre parti perchè pare essere la prima pagina compilata
 export const socket = io('http://localhost:3001',

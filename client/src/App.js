@@ -18,7 +18,7 @@ function App() {
     <Routes> 
       <Route path="/" element={<LoginPage/>} />
       <Route path="selectGame" element={<InitialPage/>} />
-      <Route path="selectGame/partita" element={<GameField/>}  />
+      <Route path="selectGame/Partita" element={<GameField/>}  />
     </Routes>
   </>
   );
