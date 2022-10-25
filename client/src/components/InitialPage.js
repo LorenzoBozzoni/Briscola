@@ -19,6 +19,7 @@ export class InitialPage extends Component {
     this.setState({visibilitySpinner:"visible"})
     // Nell'attesa della risposta (evento socket partitaIniziata) si potrebbe rendere visibile il simbolo di attesa
   }
+  
   render (){
     return(
     <>
