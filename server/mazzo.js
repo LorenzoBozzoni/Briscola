@@ -1,17 +1,4 @@
-class Carta{
-    constructor(Valore, Numero, Seme, IsBriscola, ImagePath){
-        this.Valore = Valore
-        this.Numero = Numero
-        this.Seme = Seme
-        this.IsBriscola = IsBriscola
-        this.ImagePath = ImagePath
-    }
-
-    getSeme() { return this.Seme }
-    setIsBriscola(val) { this.IsBriscola = val } 
-    getImagePath() {return this.ImagePath}
-
-}
+const Carta = require('./carta.js')
 
 class Mazzo {
     constructor() {

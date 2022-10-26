@@ -25,7 +25,7 @@ export class InitialPage extends Component {
     <>
     <div className="d-grid gap-2 d-md-block">
         <button className="btn btn-primary" type="button" onClick={() => this.gameTypeSelected("single")}><Link to="./partita">Single Player</Link></button>
-        <button className="btn btn-primary" type="button" onClick={() => this.gameTypeSelected("multi")}>Random multiplayer</button>
+        <button className="btn btn-primary" type="button" onClick={() => this.gameTypeSelected("multi")}><Link to="./partita">Random multiplayer</Link></button>
         <button className="btn btn-primary" type="button" onClick={() => this.gameTypeSelected("friend")}>Play with a friend</button>
     </div>
     <div className="spinner-border text-primary" role="status" id="spinner" style={{visibility:this.state.visibilitySpinner}}>

@@ -11,21 +11,40 @@ export class GameField extends Component {
   state = {
     primaCarta : "",
     secondaCarta : "",
-    terzaCarta : ""
+    terzaCarta : "",
+    punteggio1 : 0,
+    punteggio2 : 1,          // sbagliato apposta per vedere se setState corregge TODO: ripristinare a 0
+    idPartita : 0
   };
     
   
   handleClick = event => {      // Metodo serve per sapere quale elemento ha passato attivato evento click (non si riesce direttamente dall'elemento)
-    window.alert(event.currentTarget.id);
+    var id = event.currentTarget.id     // Elemento sul quale è stato fatto il click
+    window.alert(id);
+    
     if (socket.connected){    // verifichiamo di essere connessi prima di inviare il click
-      socket.emit("cartaGiocata", )
+      switch (id) {
+        case "SecondPlayerFirstCard":
+          socket.emit("cartaGiocataReq", this.state.idPartita, socket.id, this.state.primaCarta)       
+          break;
+        case "SecondPlayerSecondCard":
+          socket.emit("cartaGiocataReq", this.state.idPartita, socket.id, this.state.secondaCarta)
+          break;
+        case "SecondPlayerThirdCard":
+          socket.emit("cartaGiocataReq", this.state.idPartita, socket.id, this.state.terzaCarta)
+          break;
+        case "Mazzo":
+          socket.emit("pescaDalMazzo")
+          break;
+        default:
+          break;
+      }
+
+
+      
+
     }
   };
-
-  constructor(){
-    super()     // serve per non avere problemi con "this" -> https://it.reactjs.org/docs/react-component.html
-    //this.listener()
-  }
 
   //useEffect(){
   //listener(){
@@ -64,14 +83,44 @@ export class GameField extends Component {
                     terzaCarta:JSON.stringify(manoJSON.TerzaCarta)}
       */
 
+      // Settiamo la mano iniziale
       this.setState({primaCarta:JSON.stringify(manoJSON.PrimaCarta)})
       this.setState({secondaCarta:JSON.stringify(manoJSON.SecondaCarta)})
       this.setState({terzaCarta:JSON.stringify(manoJSON.TerzaCarta)})
-
-      
       console.log("STATO" + this.state)
+
+      // Punteggio iniziale, 0 - 0 TODO: statico?
+      this.setState({punteggio1:JSON.stringify(partitaJSON.Punteggio1)})
+      this.setState({punteggio2:JSON.stringify(partitaJSON.Punteggio2)})
+
+      this.setState({idPartita:JSON.stringify(partitaJSON.IdPartita)})
+    })
+  
+
+    socket.on("cartaGiocataRes", (outcome, carta) =>{
+      if (outcome){
+        // se esito positivo alla richiesta di giocare una carta
+        switch (carta) {
+          case this.state.primaCarta:
+            this.setState({primaCarta:"EMPTY"})
+            break;
+          case this.state.secondaCarta:
+            this.setState({secondaCarta:"EMPTY"})
+            break;
+          case this.state.terzaCarta:
+            this.setState({terzaCarta:"EMPTY"})
+            break;
+          default:
+            break;
+        }
+      }
+    })
+
+    socket.on("avversarioDisconnesso", () => {
+      window.alert("L'avversario si è disconnesso")
     })
   }
+  
   
 
   render() { 
@@ -90,6 +139,9 @@ export class GameField extends Component {
         <div className="col" id="FirstPlayerThirdCard" onClick={this.handleClick}>
           <img src={cartaCoperta} alt=""></img>
         </div>
+        <div className="col" id="FirsePlayerPoints" onClick={this.handleClick}>
+          <div>{this.state.punteggio1}</div>
+        </div>
       </div>
       <div className="row">
         <div className="col-4">col-4</div>        
@@ -104,6 +156,9 @@ export class GameField extends Component {
         </div>
         <div className="col" id="SecondPlayerThirdCard" onClick={this.handleClick}>
           <div>{this.state.terzaCarta}</div>
+        </div>
+        <div className="col" id="SecondPlayerPoints" onClick={this.handleClick}>
+          <div>{this.state.punteggio2}</div>
         </div>
       </div>
     </div>
