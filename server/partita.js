@@ -1,3 +1,4 @@
+const Carta = require('./carta.js');
 const Mazzo = require('./mazzo.js')
 
 class Partita{
@@ -10,7 +11,7 @@ class Partita{
         this.IdGiocatore1 = IdGiocatore1
         this.IdGiocatore2 = IdGiocatore2
         this.ChiInizia = IdGiocatore1
-        this.CartaInTavola = null
+        this.CartaInTavola = null;    
     }
 
     // Ritorna il mazzo utilizzato per una partita
@@ -62,6 +63,7 @@ class Partita{
     // Carte giocate durante la mano, pos può essere 0 o 1 in base a quando è stata giocata la carta
     setCartaInTavola(value) {
         this.CartaInTavola = value;  
+        console.log("CARTAINTAVOLA: " + this.CartaInTavola.getIsBriscola() + " " + this.CartaInTavola.getImagePath() + " " + this.CartaInTavola.getSeme() + " " + this.CartaInTavola.getValore())
     }
 
     // Imposta l'id del giocatore che deve iniziare il turno successivo
