@@ -50,6 +50,7 @@ export class GameField extends Component {
   //listener(){
   componentDidMount() {
     socket.on("partitaIniziata", (partita, mano) => {
+      window.alert("PARTITA INIZIATA, MIOID: "+ socket.id)
       // mano e partita vengono mandate come stringhe, vanno sistemate per formato corretto e poi convertite
       var manoStr = mano.substring(mano.indexOf("{"))
       var partitaStr = partita.substring(partita.indexOf("{"))
@@ -113,6 +114,8 @@ export class GameField extends Component {
           default:
             break;
         }
+      }else{
+        window.alert("Non puoi giocare la carta")
       }
     })
 

@@ -12,6 +12,7 @@ class Carta{
     getIsBriscola() { return this.IsBriscola}
     getValore() { return this.Valore }
     getImagePath() {return this.ImagePath}
+    
 
 }
 

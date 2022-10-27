@@ -40,13 +40,13 @@ export class LoginPage extends Component {
             window.alert(`Client connesso con id ${socket.id}`)       // connessione necessaria col server
           })
         }else{
+          window.alert(`Client connesso con id ${socket.id}`)
           var email = document.getElementById("exampleInputEmail1").value;
           var password = document.getElementById("exampleInputPassword1").value;
           socket.emit('access', accessType, email, password); 
           window.alert("Evento accesso creato")
         }
     
-
         socket.on('accessOutcome', (accessOutcome) => {
             window.alert("esito: " + accessOutcome);
             window.alert("Ricezione evento accesso: " + accessOutcome);
