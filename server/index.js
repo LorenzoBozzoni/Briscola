@@ -13,8 +13,6 @@ const { emit } = require("process");
 
 app.use(cors({origin: ["https://admin.socket.io/", "http://localhost:3000"]}));
 
-
-
 const dbURI = "mongodb+srv://lorebozzo:-4J2Rht4QYq6S!!@cluster0.3wfvfel.mongodb.net/?retryWrites=true&w=majority"
 const mongoClient = new MongoClient(dbURI);
 
@@ -59,9 +57,7 @@ io.on("connection", (socket) =>{
 
   // RICHIESTA CLIENT PER LOGIN/SIGNUP
   socket.on("access", async (accessMode, email, password) => {      // async qua per aspettare risultato query mongodb
-    console.log("accessMode:",accessMode)
-    console.log("email:",email)
-    console.log("password:",password)
+    console.log("accessMode: ",accessMode,"\nemail: ",email,"\npassword: ",password)
     if (accessMode === "signup"){
       const selectResult = await collection.findOne({user: email});
       const insertResult = collection.insertOne({user: email, password: password});      // tolto async --> AGGIUNGERE HASH!
@@ -71,7 +67,6 @@ io.on("connection", (socket) =>{
       } else {
         outcome = false;
       }
-      //console.log('Inserted documents =>', insertResult);
     }else{
       // login
       const selectResult = await collection.findOne({user: email, password: password});
@@ -85,11 +80,10 @@ io.on("connection", (socket) =>{
         console.log("LOGIN FALSE")   
       }
     }
-    const porcaTroia = (socket.id)
-    console.log("SOCKET A CUI MANDARE ESITO: " + porcaTroia)
-    socket.emit("accessOutcome", outcome)
+    socket.emit("accessOutcome", outcome)   // TODO: mettere io.to() ?
   })
 
+  // SELEZIONE TIPO DI PARTITA CHE SI VUOLE FARE
   socket.on("gameTypeSelected", (mode) => {
     switch (mode) {
       case "friend": {
@@ -104,7 +98,7 @@ io.on("connection", (socket) =>{
         //console.log({tmp})
   
         console.log(tmp.getMazzo().getMano())
-        socket.to(socket.id).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()))
+        io.to(socket.id).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()))
         break;
       }
       case "multi": {
@@ -121,8 +115,8 @@ io.on("connection", (socket) =>{
           partite.push(tmp)
           console.log(JSON.stringify(partite))
           //console.log({tmp})
-          console.log("Socket.id: " + socket.id + " Type: " + typeof(socket.id))
-          console.log("SocketAvversario: " + avversario + " Type: " + typeof(avversario))
+          console.log("\nSocket.id: " + socket.id + " Type: " + typeof(socket.id))
+          console.log("\nSocketAvversario: " + avversario + " Type: " + typeof(avversario))
           console.log(tmp.getMazzo().getMano())
           
           io.to(socket.id).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()))
@@ -134,75 +128,95 @@ io.on("connection", (socket) =>{
     }
   })  
 
-  socket.on("cartaGiocataReq", (idPartita, idGiocatore, cartaGiocata) => {
+  socket.on("cartaGiocataReq", (idPartita, cartaGiocata) => {
     // carta giocata è una stringa contentente un json. Deve essere convertita con JSON.parse per poter accedere alle sue proprietà
     cartaGiocata = JSON.parse(cartaGiocata)
-    console.log("PARAMETRI: "+idPartita+" "+idGiocatore + " " + cartaGiocata)
+    
+    // Scorri tutte le partite in corso 
     for (let i = 0; i < partite.length; i++) {
       if ((partite[i].getIdPartita()).toString() === idPartita){
-        /*
-        console.log("CARTA GIOCATA normale: " + cartaGiocata)
-        console.log("CARTA GIOCATA parse: " + JSON.parse(cartaGiocata))
-        cartaGiocata = JSON.parse(cartaGiocata)
-        console.log("CARTA GIOCATA valori:\n-Valore: " + cartaGiocata.Valore + "\n-Numero: " + cartaGiocata.Numero + "\n-Seme: " + cartaGiocata.Seme + "\n-IsBriscola: " + cartaGiocata.IsBriscola + "\n-ImagePath: " + cartaGiocata.ImagePath)
-        */
+        console.log("Partita trovata")
+        
         var tmpCarta = new Carta(cartaGiocata.Valore, cartaGiocata.Numero, cartaGiocata.Seme, cartaGiocata.IsBriscola, cartaGiocata.ImagePath)
+        //console.log("TMPCARTA: " + tmpCarta.getIsBriscola() + " " + tmpCarta.getImagePath() + " " + tmpCarta.getSeme() + " " + tmpCarta.getValore())
 
-        console.log("TMPCARTA: " + tmpCarta.getIsBriscola() + " " + tmpCarta.getImagePath() + " " + tmpCarta.getSeme() + " " + tmpCarta.getValore())
+        console.log("partite[i].getCartaInTavola() --> " + partite[i].getCartaInTavola() + " tipo --> " + typeof(partite[i].getCartaInTavola()))
+        console.log("idGiocatore (socket.id) --> " + socket.id + " tipo --> " + typeof(socket.id))
+        console.log("partite[i].getChiInizia() --> " + partite[i].getChiInizia() + " tipo --> " + typeof(partite[i].getChiInizia()))
 
-        if (partite[i].getCartaInTavola() === null && idGiocatore === partite[i].getChiInizia()){         // Prima carta del turno
-            // TODO: non sembra andare la funzione sotto, non viene settato l'oggetto 
-            partite[i].setCartaInTavola(tmpCarta)
-            console.log("PARTITE["+i+"].getCartaInTavola --> ", partite[i].getCartaInTavola())
-            io.to(socket.id).emit("cartaGiocataRes", true, cartaGiocata)          // esito richiesta carta giocata
-            console.log("Risposta richiesta carta giocata inviata")
-        } else if (partite[i].getCartaInTavola != null && idGiocatore != partite[i].getChiInizia()) {       // Seconda carta del turno
-            // Calcola vincitore
-            var primaCartaGiocata = partite[i].getCartaInTavola()
-            var secondaCartaGiocata = tmpCarta
-          
-            try{
-                if (primaCartaGiocata.getIsBriscola() && secondaCartaGiocata.getIsBriscola()){
-                  // Entrambe le carte sono briscola, vince quella di valore maggiore
-                  if (primaCartaGiocata.getValore() > secondaCartaGiocata.getValore()){
-                    partite[i].setChiInizia(partite[i].getAvversario(idGiocatore))     // Il turno successivo è iniziato dall'avversario del giocatore nel metodo qua 
-                  }
-                } else if (!primaCartaGiocata.getIsBriscola() && secondaCartaGiocata.getIsBriscola()) {
-                  // Solo la seconda è briscola, vince la seconda
-                  partite[i].setChiInizia(idGiocatore)
-                } else if (primaCartaGiocata.getIsBriscola() && !secondaCartaGiocata.getIsBriscola()) {
-                  // Solo la prima è briscola, vince la prima
-                  partite[i].setChiInizia(partite[i].getAvversario(idGiocatore))
-                } else {
-                  // Nessuna delle due è briscola, si vede se segno uguale per valore poi o per ordine se segno diverso
-                  if (primaCartaGiocata.getSegno() === secondaCartaGiocata.getSegno()){
-                    // Vince quella di valore maggiore
-                    if (primaCartaGiocata.getValore() > secondaCartaGiocata.getValore()){
-                      partite[i].setChiInizia(partite[i].getAvversario(idGiocatore))     // Il turno successivo è iniziato dall'avversario del giocatore nel metodo qua 
-                    } else{
-                      partite[i].setChiInizia(idGiocatore)
-                    }
-                  } else {
-                    // Vince la prima giocata
-                    partite[i].setChiInizia(partite[i].getAvversario(idGiocatore))
-                  }  
+        if (partite[i].getCartaInTavola() === null && socket.id === partite[i].getChiInizia()){         // Prima carta del turno
+          console.log("PRIMA CARTA IN TAVOLA GIOCATA")
+          partite[i].setCartaInTavola(tmpCarta)
+          console.log("PARTITE["+i+"].getCartaInTavola --> ", partite[i].getCartaInTavola())
+          io.to(socket.id).emit("cartaGiocataRes", true, JSON.stringify(cartaGiocata))          // esito richiesta carta giocata
+          io.to(partite[i].getAvversario(socket.id)).emit("cartaGiocataAvversario")             // per aggiornamento grafica
+          console.log("Risposta richiesta carta giocata inviata")
+        } else if (partite[i].getCartaInTavola() != null && socket.id != partite[i].getChiInizia()) {       // Seconda carta del turno
+          console.log("SECONDA CARTA IN TAVOLA GIOCATA")
+          io.to(socket.id).emit("cartaGiocataRes", true, JSON.stringify(cartaGiocata))    // Stringify serve per fare ritornare come era quando passata come parametro
+          io.to(partite[i].getAvversario(socket.id)).emit("cartaGiocataAvversario")       // per aggiornamento grafica
+          // Calcola vincitore
+          var primaCartaGiocata = partite[i].getCartaInTavola()
+          var secondaCartaGiocata = tmpCarta
+          var idVincitoreMano = "";
+
+          try{
+            if (primaCartaGiocata.getIsBriscola() && secondaCartaGiocata.getIsBriscola()){
+              // Entrambe le carte sono briscola, vince quella di valore maggiore
+              if (primaCartaGiocata.getValore() > secondaCartaGiocata.getValore()){
+                idVincitoreMano = partite[i].getAvversario(socket.id)
+                //partite[i].setChiInizia(partite[i].getAvversario(socket.id))     // Il turno successivo è iniziato dall'avversario del giocatore nel metodo qua 
               }
-            }catch(err){
-              console.log("ERRORE TRY CATCH: " + err)
-              console.log("Prima carta giocata: " + primaCartaGiocata)
-              console.log("Seconda carta giocata: " + secondaCartaGiocata)
+            } else if (!primaCartaGiocata.getIsBriscola() && secondaCartaGiocata.getIsBriscola()) {
+              // Solo la seconda è briscola, vince la seconda
+              idVincitoreMano = socket.id
+              //partite[i].setChiInizia(socket.id)
+            } else if (primaCartaGiocata.getIsBriscola() && !secondaCartaGiocata.getIsBriscola()) {
+              // Solo la prima è briscola, vince la prima
+              idVincitoreMano = partite[i].getAvversario(socket.id)
+              //partite[i].setChiInizia(partite[i].getAvversario(socket.id))
+            } else {
+              // Nessuna delle due è briscola, si vede se segno uguale per valore poi o per ordine se segno diverso
+              if (primaCartaGiocata.getSeme() === secondaCartaGiocata.getSeme()){
+                // Vince quella di valore maggiore
+                if (primaCartaGiocata.getValore() > secondaCartaGiocata.getValore()){
+                  idVincitoreMano = partite[i].getAvversario(socket.id)
+                  //partite[i].setChiInizia(partite[i].getAvversario(socket.id))     // Il turno successivo è iniziato dall'avversario del giocatore nel metodo qua 
+                } else{
+                  idVincitoreMano = socket.id
+                  //partite[i].setChiInizia(socket.id)
+                }
+              } else {
+                // Vince la prima giocata
+                idVincitoreMano = partite[i].getAvversario(socket.id)
+                //partite[i].setChiInizia(partite[i].getAvversario(socket.id))
+              }  
             }
+          }catch(err){
+            console.log("ERRORE TRY CATCH: " + err)
+            console.log("Prima carta giocata: " + primaCartaGiocata)
+            console.log("Seconda carta giocata: " + secondaCartaGiocata)
+            io.to(socket.id).emit("cartaGiocataRes", false)
+          }
 
 
-            // Fare visualizzare la prima e la seconda carta giocata
+          // Fare visualizzare la prima e la seconda carta giocata
 
-            // Setta nuovo ChiGioca
-            // Calcola punteggio
-            // Ritorno messaggio e aggiornamento
-            // Svuota CartaInTavola
+          // Setta nuovo ChiGioca
+          partite[i].setChiInizia(idVincitoreMano)
+          // Calcola punteggio
+          if (partite[i].getIdGiocatore1() === idVincitoreMano){
+            partite[i].addToPunteggio1(primaCartaGiocata.getValore() + secondaCartaGiocata.getValore())
+          }else{
+            partite[i].addToPunteggio2(primaCartaGiocata.getValore() + secondaCartaGiocata.getValore())
+          }
+          // Ritorno messaggio e aggiornamento
+          io.to(socket.id).emit("fineMano")
+          io.to(partite[i].getAvversario(socket.id)).emit("fineMano" )  
+          // Svuota CartaInTavola
 
         }else{
-          socket.to(socket.id).emit("cartaGiocataRes", false)
+          io.to(socket.id).emit("cartaGiocataRes", false)
         }
 
       }else{
@@ -236,6 +250,14 @@ io.on("connection", (socket) =>{
     }
     socket.to(sendTo).emit("disconnessioneAvversario")
     console.log("Evento disconnessione avversario inviato a -> " + sendTo)
+
+
+    // Chiusura robe strane
+    /*
+    socket.removeAllListeners('send message');
+    socket.removeAllListeners('disconnect');
+    io.removeAllListeners('connection');
+    */
   })
 })
 

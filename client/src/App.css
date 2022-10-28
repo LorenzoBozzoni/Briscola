@@ -37,6 +37,10 @@
   }
 }
 
+body > #root > div {
+  height: 100vh;
+}
+
 /*
 // USATI PER IMMAGINI CENTRATE CARTE DEL CAMPO DI GIOCO 
 // SOURCE: https://stackoverflow.com/questions/14142378/how-can-i-fill-a-div-with-an-image-while-keeping-it-proportional

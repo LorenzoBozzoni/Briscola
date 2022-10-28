@@ -47,7 +47,7 @@ export class LoginPage extends Component {
           window.alert("Evento accesso creato")
         }
     
-        socket.on('accessOutcome', (accessOutcome) => {
+        socket.off("accessOutcome").on('accessOutcome', (accessOutcome) => {
             window.alert("esito: " + accessOutcome);
             window.alert("Ricezione evento accesso: " + accessOutcome);
             this.setState({visibilitySpinner:"hidden"})  // switch

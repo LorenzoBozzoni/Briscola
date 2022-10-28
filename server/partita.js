@@ -7,7 +7,7 @@ class Partita{
         this.Mazzo = new Mazzo()
         this.ManiRimanenti = Math.floor(this.Mazzo.carteRimanenti() / 2);     // Numero carte diviso il numero di giocatori
         this.Punteggio1 = 0
-        this.Punteggio2 = 0
+        this.Punteggio2 = 15 // Testing per asimmetria 
         this.IdGiocatore1 = IdGiocatore1
         this.IdGiocatore2 = IdGiocatore2
         this.ChiInizia = IdGiocatore1
@@ -41,7 +41,7 @@ class Partita{
 
     // Ritorna la carta che è stata giocata e che quindi è in tavola se presente, altrimenti null
     getCartaInTavola() {
-        return this.Mano;
+        return this.CartaInTavola;
     }
 
     // Ritorna l'id del giocatore che deve iniziare la mano
@@ -69,6 +69,22 @@ class Partita{
     // Imposta l'id del giocatore che deve iniziare il turno successivo
     setChiInizia(idGiocatore) {
         this.ChiInizia = idGiocatore;
+    }
+
+    getPunteggio1() {
+        return this.Punteggio1
+    }
+
+    getPunteggio2() {
+        return this.Punteggio2
+    }
+
+    addToPunteggio1(valore) {
+        this.Punteggio1 += valore;
+    }
+
+    addToPunteggio2(valore) {
+        this.Punteggio2 += valore;
     }
 }
 
