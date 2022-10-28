@@ -16,7 +16,6 @@ export class GameField extends Component {
     primaCartaAvversario : "",
     secondaCartaAvversario : "",
     terzaCartaAvversario : "",
-
     punteggioMio : 0,
     punteggioAvversario : 1,          // sbagliato apposta per vedere se setState corregge TODO: ripristinare a 0
     idPartita : 0
@@ -80,12 +79,12 @@ export class GameField extends Component {
 
       // Punteggio iniziale, 0 - 0 TODO: statico?
       if (socket.id === partitaJSON.IdGiocatore1) {
-        this.setState({punteggioMio:JSON.stringify(partitaJSON.punteggio1)})
-        this.setState({punteggioAvversario:JSON.stringify(partitaJSON.punteggio2)})
+        this.setState({punteggioMio:JSON.stringify(partitaJSON.Punteggio1)})
+        this.setState({punteggioAvversario:JSON.stringify(partitaJSON.Punteggio2)})
       } else {
         // inversione per avere visuale relativa a giocatore, altrimenti tutti e due vedono uguale
-        this.setState({punteggioAvversario:JSON.stringify(partitaJSON.punteggio2)})
-        this.setState({punteggioMio:JSON.stringify(partitaJSON.punteggio1)})
+        this.setState({punteggioAvversario:JSON.stringify(partitaJSON.Punteggio2)})
+        this.setState({punteggioMio:JSON.stringify(partitaJSON.Punteggio1)})
       }
 
 
@@ -153,7 +152,6 @@ export class GameField extends Component {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
   
-  // h-100
   
   render() { 
     return (
@@ -162,34 +160,35 @@ export class GameField extends Component {
       <div className="container text-center">   
           
       <div className="row">
-        <div className="col" id="SecondPlayerFirstCard" onClick={this.handleClick}>
+        <div className="col-sm" id="SecondPlayerFirstCard" onClick={this.handleClick}>
           <img src={this.state.primaCartaAvversario} alt=""></img>
         </div>
-        <div className="col" id="SecondPlayerSecondCard" onClick={this.handleClick}>
+        <div className="col-sm" id="SecondPlayerSecondCard" onClick={this.handleClick}>
           <img src={this.state.secondaCartaAvversario} alt=""></img>
         </div>
-        <div className="col" id="SecondPlayerThirdCard" onClick={this.handleClick}>
+        <div className="col-sm" id="SecondPlayerThirdCard" onClick={this.handleClick}>
           <img src={this.state.terzaCartaAvversario} alt=""></img>
         </div>
-        <div className="col" id="SecondPlayerPoints" onClick={this.handleClick}>
+        <div className="col-sm" id="SecondPlayerPoints" onClick={this.handleClick}>
           <div>{this.state.punteggioAvversario}</div>
         </div>
       </div>
       <div className="row">
-        <div className="col-4">col-4</div>        
-        <div className="col-8">col-8</div>
+        <div className="col-sm">Mazzo</div>        
+        <div className="col-sm">Carta giocata 1</div>
+        <div className="col-sm">Carta giocata 2</div>
       </div>
       <div className="row BottomDiv">
-        <div className="col" id="FirstPlayerFirstCard" onClick={this.handleClick}>
+        <div className="col-sm" id="FirstPlayerFirstCard" onClick={this.handleClick}>
           <div>{this.state.primaCartaMia}</div> 
         </div>
-        <div className="col" id="FirstPlayerSecondCard" onClick={this.handleClick}>
+        <div className="col-sm" id="FirstPlayerSecondCard" onClick={this.handleClick}>
           <div>{this.state.secondaCartaMia}</div>
         </div>
-        <div className="col" id="FirstPlayerThirdCard" onClick={this.handleClick}>
+        <div className="col-sm" id="FirstPlayerThirdCard" onClick={this.handleClick}>
           <div>{this.state.terzaCartaMia}</div>
         </div>
-        <div className="col" id="FirstPlayerPoints" onClick={this.handleClick}>
+        <div className="col-sm" id="FirstPlayerPoints" onClick={this.handleClick}>
           <div>{this.state.punteggioMio}</div>
         </div>
       </div>
