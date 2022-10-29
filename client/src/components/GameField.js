@@ -13,6 +13,9 @@ export class GameField extends Component {
     primaCartaMia : "",
     secondaCartaMia : "",
     terzaCartaMia : "",
+    immPrimaCartaMia : "",
+    immSecondaCartaMia : "",
+    immTerzaCartaMia : "",
     primaCartaAvversario : "",
     secondaCartaAvversario : "",
     terzaCartaAvversario : "",
@@ -59,23 +62,23 @@ export class GameField extends Component {
       var manoJSON = JSON.parse(mano.substring(mano.indexOf("{")))              // , mano.lastIndexOf("}")
       var partitaJSON = JSON.parse(partita.substring(partita.indexOf("{")))     // , partita.lastIndexOf("}")
 
-      console.log("cartaCoperta", cartaCoperta)
-      console.log("primaCartaMia",manoJSON.PrimaCarta.ImagePath)
-
       // Settiamo la mano iniziale
-      this.setState({primaCartaMia:JSON.stringify(manoJSON.PrimaCarta)})
-      this.setState({secondaCartaMia:JSON.stringify(manoJSON.SecondaCarta)})
-      this.setState({terzaCartaMia:JSON.stringify(manoJSON.TerzaCarta)})
+      this.setState({primaCartaMia: JSON.stringify(manoJSON.PrimaCarta)})
+      this.setState({secondaCartaMia: JSON.stringify(manoJSON.SecondaCarta)})
+      this.setState({terzaCartaMia: JSON.stringify(manoJSON.TerzaCarta)})
+      // Dobbiamo impostare lo stato delle immagini delle carte del giocatore1 a parte
+      const percorsoPrima = manoJSON.PrimaCarta.ImagePath.substring(manoJSON.PrimaCarta.ImagePath.lastIndexOf("/")+1,manoJSON.PrimaCarta.ImagePath.lastIndexOf("."))
+      const percorsoSeconda = manoJSON.SecondaCarta.ImagePath.substring(manoJSON.SecondaCarta.ImagePath.lastIndexOf("/")+1,manoJSON.SecondaCarta.ImagePath.lastIndexOf("."))
+      const percorsoTerza = manoJSON.TerzaCarta.ImagePath.substring(manoJSON.TerzaCarta.ImagePath.lastIndexOf("/")+1,manoJSON.TerzaCarta.ImagePath.lastIndexOf("."))
+      // Non si può fare require(manoJSON.PrimaCarta.ImagePath)
+      this.setState({immPrimaCartaMia:require("../Images/Piacentine/" + percorsoPrima + ".jpg")})
+      this.setState({immSecondaCartaMia:require("../Images/Piacentine/" + percorsoSeconda + ".jpg")})
+      this.setState({immTerzaCartaMia:require("../Images/Piacentine/" + percorsoTerza + ".jpg")})
 
       // Carte avversario
-      try{
       this.setState({primaCartaAvversario:cartaCoperta})
       this.setState({secondaCartaAvversario:cartaCoperta})
       this.setState({terzaCartaAvversario:cartaCoperta})
-      }catch(err){
-        window.alert("Errore " + err)
-      } 
-      console.log("STATO" + this.state)
 
       // Punteggio iniziale, 0 - 0 TODO: statico?
       if (socket.id === partitaJSON.IdGiocatore1) {
@@ -86,7 +89,6 @@ export class GameField extends Component {
         this.setState({punteggioAvversario:JSON.stringify(partitaJSON.Punteggio2)})
         this.setState({punteggioMio:JSON.stringify(partitaJSON.Punteggio1)})
       }
-
 
       this.setState({idPartita:JSON.stringify(partitaJSON.IdPartita)})
     })
@@ -99,12 +101,15 @@ export class GameField extends Component {
         switch (carta) {
           case this.state.primaCartaMia:
             this.setState({primaCartaMia:"EMPTY"})     // Ovviamente allo svuotamento corrisponderà una "azione grafica" associata
+            this.setState({immPrimaCartaMia : ""})
             break;
           case this.state.secondaCartaMia:
             this.setState({secondaCartaMia:"EMPTY"})
+            this.setState({immSecondaCartaMia : ""})
             break;
           case this.state.terzaCartaMia:
             this.setState({terzaCartaMia:"EMPTY"})
+            this.setState({immTerzaCartaMia : ""})
             break;
           default:
             break;
@@ -180,13 +185,13 @@ export class GameField extends Component {
       </div>
       <div className="row BottomDiv">
         <div className="col-sm" id="FirstPlayerFirstCard" onClick={this.handleClick}>
-          <div>{this.state.primaCartaMia}</div> 
+          <img src={this.state.immPrimaCartaMia} alt=""></img>
         </div>
         <div className="col-sm" id="FirstPlayerSecondCard" onClick={this.handleClick}>
-          <div>{this.state.secondaCartaMia}</div>
+          <img src={this.state.immSecondaCartaMia} alt=""></img>
         </div>
         <div className="col-sm" id="FirstPlayerThirdCard" onClick={this.handleClick}>
-          <div>{this.state.terzaCartaMia}</div>
+          <img src={this.state.immTerzaCartaMia} alt=""></img>
         </div>
         <div className="col-sm" id="FirstPlayerPoints" onClick={this.handleClick}>
           <div>{this.state.punteggioMio}</div>
@@ -197,29 +202,4 @@ export class GameField extends Component {
     )
   }
 }
-
-
-
-/**
-function cartaGiocata(id){
-  window.alert(id);
-  if (socket.connected){    // verifichiamo di essere connessi prima di inviare il click
-    socket.emit("cartaGiocata", )
-  }
-}
-
-
-PER LA VISUALIZZAZIONE DELLE CARTE PROPRIE, NON FUNZIONA BTW
-      <div className="row">
-        <div className="col" id="SecondPlayerFirstCard" onClick={this.handleClick}>
-          <img src={this.state.primaCartaMia} alt=""></img> 
-        </div>
-        <div className="col" id="SecondPlayerSecondCard" onClick={this.handleClick}>
-          <img src={this.state.secondaCartaMia} alt=""></img>
-        </div>
-        <div className="col" id="SecondPlayerThirdCard" onClick={this.handleClick}>
-          <img src={this.state.terzaCartaMia} alt=""></img>
-        </div>
-      </div>
- */
 
