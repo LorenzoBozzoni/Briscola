@@ -14,10 +14,11 @@ export class InitialPage extends Component {
         this.setState({visibilitySpinner:"hidden"}) 
   } 
 
-  gameTypeSelected(modalità){
+  async gameTypeSelected(modalità){
     socket.emit('gameTypeSelected', modalità);
     this.setState({visibilitySpinner:"visible"})
     // Nell'attesa della risposta (evento socket partitaIniziata) si potrebbe rendere visibile il simbolo di attesa
+    //await fetch("./Partita")
   }
   
   render (){
@@ -34,5 +35,5 @@ export class InitialPage extends Component {
     </>
   )}
 }
-
+//<Link to="./partita">Single Player</Link>
 

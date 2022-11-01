@@ -148,13 +148,13 @@ io.on("connection", (socket) =>{
           console.log("PRIMA CARTA IN TAVOLA GIOCATA")
           partite[i].setCartaInTavola(tmpCarta)
           console.log("PARTITE["+i+"].getCartaInTavola --> ", partite[i].getCartaInTavola())
-          io.to(socket.id).emit("cartaGiocataRes", true, JSON.stringify(cartaGiocata))          // esito richiesta carta giocata
-          io.to(partite[i].getAvversario(socket.id)).emit("cartaGiocataAvversario")             // per aggiornamento grafica
+          io.to(socket.id).emit("cartaGiocataRes", true, JSON.stringify(cartaGiocata),1)          // esito richiesta carta giocata
+          io.to(partite[i].getAvversario(socket.id)).emit("cartaGiocataAvversario", cartaGiocata.ImagePath,1)             // per aggiornamento grafica
           console.log("Risposta richiesta carta giocata inviata")
         } else if (partite[i].getCartaInTavola() != null && socket.id != partite[i].getChiInizia()) {       // Seconda carta del turno
           console.log("SECONDA CARTA IN TAVOLA GIOCATA")
-          io.to(socket.id).emit("cartaGiocataRes", true, JSON.stringify(cartaGiocata))    // Stringify serve per fare ritornare come era quando passata come parametro
-          io.to(partite[i].getAvversario(socket.id)).emit("cartaGiocataAvversario")       // per aggiornamento grafica
+          io.to(socket.id).emit("cartaGiocataRes", true, JSON.stringify(cartaGiocata),2)    // Stringify serve per fare ritornare come era quando passata come parametro
+          io.to(partite[i].getAvversario(socket.id)).emit("cartaGiocataAvversario", cartaGiocata.ImagePath, 2)       // per aggiornamento grafica
           // Calcola vincitore
           var primaCartaGiocata = partite[i].getCartaInTavola()
           var secondaCartaGiocata = tmpCarta

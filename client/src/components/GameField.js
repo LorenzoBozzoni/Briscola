@@ -19,6 +19,8 @@ export class GameField extends Component {
     primaCartaAvversario : "",
     secondaCartaAvversario : "",
     terzaCartaAvversario : "",
+    primaCartaTavola : "",
+    secondaCartaTavola : "",
     punteggioMio : 0,
     punteggioAvversario : 1,          // sbagliato apposta per vedere se setState corregge TODO: ripristinare a 0
     idPartita : 0
@@ -46,9 +48,6 @@ export class GameField extends Component {
         default:
           break;
       }
-
-
-      
 
     }
   };
@@ -94,7 +93,7 @@ export class GameField extends Component {
     })
   
     // RISPOSTA ALLA RICHIESTA DI METTERE UNA CARTA IN TAVOLA
-    socket.off("cartaGiocataRes").on("cartaGiocataRes", (outcome, carta) =>{ 
+    socket.off("cartaGiocataRes").on("cartaGiocataRes", (outcome, carta, numeroInTavola) =>{ 
       window.alert("Risposta per carta giocata, esito " + outcome + " carta: " + carta)
       if (outcome){
         // se esito positivo alla richiesta di giocare una carta
@@ -114,16 +113,25 @@ export class GameField extends Component {
           default:
             break;
         }
+        // Visualizzazione carta in tavola 
+        var cartaJSON = JSON.parse(carta.substring(carta.indexOf("{")))
+        const numeroCarta = cartaJSON.ImagePath.substring(cartaJSON.ImagePath.lastIndexOf("/")+1,cartaJSON.ImagePath.lastIndexOf("."))        
+        if (numeroInTavola === 1) {
+          this.setState({primaCartaTavola:require("../Images/Piacentine/"+numeroCarta+".jpg")})
+        } else {
+          this.setState({secondaCartaTavola:require("../Images/Piacentine/"+numeroCarta+".jpg")})
+        }
+      
       }else{
         window.alert("Non puoi giocare la carta")
       }
+
     })
 
     // QUANDO L'AVVERSARIO GIOCA LA CARTA VIENE VISUALIZZATO GRAFICAMENTE
-    socket.off("cartaGiocataAvversario").on("cartaGiocataAvversario", () => {
-      // si può rimuovere graficamente carta a caso però VA VISUALIZZATA IN TAVOLA
-
+    socket.off("cartaGiocataAvversario").on("cartaGiocataAvversario", (imagePath, numero) => {
       window.alert("L'avversario ha giocato una carta in tavola")
+      // si può rimuovere graficamente carta a caso 
       switch (this.randomNumberInRange(1,3)) {
         case 1:
           this.setState({primaCartaAvversario:"EMPTY"})
@@ -138,6 +146,17 @@ export class GameField extends Component {
           window.alert("Carta giocata avversario, case default")
           break;
       }
+
+      // visualizzazione in tavola della carta giocata
+      const numeroCarta = imagePath.substring(imagePath.lastIndexOf("/")+1,imagePath.lastIndexOf("."))        // TODO: funzione?
+      if (numero === 1) {
+        this.setState({primaCartaTavola:require("../Images/Piacentine/"+numeroCarta+".jpg")})
+      } else {
+        this.setState({secondaCartaTavola:require("../Images/Piacentine/"+numeroCarta+".jpg")})
+      }
+
+      
+
     })
 
 
@@ -180,8 +199,8 @@ export class GameField extends Component {
       </div>
       <div className="row">
         <div className="col-sm">Mazzo</div>        
-        <div className="col-sm">Carta giocata 1</div>
-        <div className="col-sm">Carta giocata 2</div>
+        <div className="col-sm"><img src={this.state.primaCartaTavola} alt=""></img></div>
+        <div className="col-sm"><img src={this.state.secondaCartaTavola} alt=""></img></div>
       </div>
       <div className="row BottomDiv">
         <div className="col-sm" id="FirstPlayerFirstCard" onClick={this.handleClick}>
