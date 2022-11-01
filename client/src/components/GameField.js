@@ -21,6 +21,8 @@ export class GameField extends Component {
     terzaCartaAvversario : "",
     primaCartaTavola : "",
     secondaCartaTavola : "",
+    immBriscolaEstratta : "",
+    briscolaEstratta: "",
     punteggioMio : 0,
     punteggioAvversario : 1,          // sbagliato apposta per vedere se setState corregge TODO: ripristinare a 0
     idPartita : 0
@@ -55,7 +57,7 @@ export class GameField extends Component {
   //useEffect(){
   //listener(){
   componentDidMount() {
-    socket.off("partitaIniziata").on("partitaIniziata", (partita, mano) => {
+    socket.off("partitaIniziata").on("partitaIniziata", (partita, mano, briscolaEstrattaParam) => {
       window.alert("PARTITA INIZIATA, MIOID: "+ socket.id)
       // mano e partita vengono mandate come stringhe, vanno sistemate per formato corretto e poi convertite 
       var manoJSON = JSON.parse(mano.substring(mano.indexOf("{")))              // , mano.lastIndexOf("}")
@@ -90,6 +92,11 @@ export class GameField extends Component {
       }
 
       this.setState({idPartita:JSON.stringify(partitaJSON.IdPartita)})
+
+      briscolaEstrattaParam = JSON.parse(briscolaEstrattaParam.substring(briscolaEstrattaParam.indexOf("{")))
+      const cartaBriscolaEstratta = briscolaEstrattaParam.ImagePath.substring(briscolaEstrattaParam.ImagePath.lastIndexOf("/")+1,briscolaEstrattaParam.ImagePath.lastIndexOf("."))
+      this.setState({immBriscolaEstratta:require("../Images/Piacentine/"+cartaBriscolaEstratta+".jpg")})
+      this.setState({briscolaEstratta:JSON.stringify(briscolaEstrattaParam)})
     })
   
     // RISPOSTA ALLA RICHIESTA DI METTERE UNA CARTA IN TAVOLA
@@ -198,19 +205,20 @@ export class GameField extends Component {
         </div>
       </div>
       <div className="row">
-        <div className="col-sm">Mazzo</div>        
+        <div className="col-sm"><img src={cartaCoperta} style={{float: "left"}}></img></div>     
+        <div className="col-sm"><img src={this.state.immBriscolaEstratta} style={{float: "left",transform: "rotate(90deg)"}}></img></div>      
         <div className="col-sm"><img src={this.state.primaCartaTavola} alt=""></img></div>
         <div className="col-sm"><img src={this.state.secondaCartaTavola} alt=""></img></div>
       </div>
-      <div className="row BottomDiv">
+      <div className="row">
         <div className="col-sm" id="FirstPlayerFirstCard" onClick={this.handleClick}>
-          <img src={this.state.immPrimaCartaMia} alt=""></img>
+          <img src={this.state.immPrimaCartaMia} alt="" style={{ position : "relative",bottom: 0}}></img>
         </div>
         <div className="col-sm" id="FirstPlayerSecondCard" onClick={this.handleClick}>
-          <img src={this.state.immSecondaCartaMia} alt=""></img>
+          <img src={this.state.immSecondaCartaMia} alt="" style={{position : "relative",bottom : 0}}></img>
         </div>
         <div className="col-sm" id="FirstPlayerThirdCard" onClick={this.handleClick}>
-          <img src={this.state.immTerzaCartaMia} alt=""></img>
+          <img src={this.state.immTerzaCartaMia} alt="" style={{position : "relative",bottom : 0}}></img>
         </div>
         <div className="col-sm" id="FirstPlayerPoints" onClick={this.handleClick}>
           <div>{this.state.punteggioMio}</div>

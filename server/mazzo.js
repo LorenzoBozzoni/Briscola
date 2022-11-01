@@ -5,43 +5,69 @@ class Mazzo {
         // dovremmo passare la tipologia di carte da usare 
         this.mazzo = Array(40)     // inizializzo un array di dimensione 40
         
-        let seme = ""
-        let valore = 0
+        var seme = ""
+        var valore = 0
         var ImagePath = ""
 
         for (var i = 0; i < 4; i++) {      // Per ogni seme
             switch (i) {
-                case 0: 
+                case 0: {
                     seme = "Denari"; 
-                case 1: 
+                    break
+                }
+                case 1: {
                     seme = "Coppe";
-                case 2: 
+                    break
+                }
+                case 2: {
                     seme = "Bastoni";
-                case 3: 
+                    break
+                }
+                case 3: {
                     seme = "Spade";
+                    break
+                }
             }
             for (var j = 1; j < 11; j++) {
                 switch (j){
-                    case 1: 
+                    case 1: {
                         valore = 11;     // asso
-                    case 3: 
+                        break
+                    }
+                    case 3: {
                         valore = 10;     // tre
-                    case 8: 
+                        break
+                    } 
+                    case 8: {
                         valore = 2;      // fante
-                    case 9: 
+                        break
+                    }
+                    case 9: {
                         valore = 3;      // cavallo
-                    case 10: 
+                        break
+                    }
+                    case 10: {
                         valore = 4;     // re 
-                    default: 
+                        break
+                    }
+                    default: {
                         valore = 0;
+                        break
+                    }
                 }
                 ImagePath = "../Images/Piacentine/"+(j+(i*10)) + ".jpg"
                 //ImagePath = "../../Piacentine/"+(j+(i*10)) + ".jpg"
+                console.log("Numero carta -> ",(j+(i*10)))
+                console.log("Numero del seme -> ", j)
+                console.log("Valore -> ", valore)
+                console.log("Seme -> ", seme)
+                console.log("ImagePath -> ", ImagePath)
+                console.log("-----------------------------------")
                 this.mazzo[(j+(i*10))] = new Carta(valore, j, seme, false, ImagePath)       // di default non impostiamo una briscola
             }
         }
-        let myString = JSON.stringify(this.mazzo)
-        console.log(myString)
+        var myString = JSON.stringify(this.mazzo)
+        //console.log("MAZZO CREATO --> ",myString)
     }
     
     shuffle(array) {
@@ -67,8 +93,8 @@ class Mazzo {
     }
 
     impostaBriscola(briscola) {
-        for (var i = 0; i < this.mazzo.length(); i++) {
-            if (this.mazzo[i].getSeme() == briscola){ù
+        for (var i = 1; i < this.mazzo.length; i++) {
+            if (this.mazzo[i].Seme === briscola){
                 this.mazzo[i].setIsBriscola(true)
             }
         }

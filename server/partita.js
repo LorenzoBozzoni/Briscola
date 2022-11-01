@@ -12,6 +12,10 @@ class Partita{
         this.IdGiocatore2 = IdGiocatore2
         this.ChiInizia = IdGiocatore1
         this.CartaInTavola = null;    
+        this.BriscolaEstratta = this.Mazzo.pop()
+
+        this.BriscolaEstratta.setIsBriscola(true)
+        this.Mazzo.impostaBriscola(this.BriscolaEstratta.getSeme())
     }
 
     // Ritorna il mazzo utilizzato per una partita
@@ -47,6 +51,10 @@ class Partita{
     // Ritorna l'id del giocatore che deve iniziare la mano
     getChiInizia() {
         return this.ChiInizia;
+    }
+
+    getBriscolaEstratta(){
+        return this.BriscolaEstratta;
     }
 
     // Dato l'id di un giocatore, ritorna l'id del suo avversario

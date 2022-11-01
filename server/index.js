@@ -98,7 +98,7 @@ io.on("connection", (socket) =>{
         //console.log({tmp})
   
         console.log(tmp.getMazzo().getMano())
-        io.to(socket.id).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()))
+        io.to(socket.id).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))
         break;
       }
       case "multi": {
@@ -118,9 +118,17 @@ io.on("connection", (socket) =>{
           console.log("\nSocket.id: " + socket.id + " Type: " + typeof(socket.id))
           console.log("\nSocketAvversario: " + avversario + " Type: " + typeof(avversario))
           console.log(tmp.getMazzo().getMano())
-          
-          io.to(socket.id).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()))
-          io.to(avversario).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()))          
+
+          // TODO: capire se togliere sta roba
+          try{
+            console.log("BRISCOLA ESTRATTA: ". JSON.stringify(tmp.getBriscolaEstratta()))
+          }catch(err){
+            console.log("Non funziona")
+          }
+
+
+          io.to(socket.id).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))
+          io.to(avversario).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))          
         }
         break;
       }
