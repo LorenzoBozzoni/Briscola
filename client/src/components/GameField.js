@@ -2,13 +2,16 @@ import {React, Component} from 'react'
 import {Navbar} from './Navbar.js'
 import 'bootstrap/dist/css/bootstrap.css';
 import {socket} from "./LoginPage.js"
+import { notify } from '../App.js'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 //import "./GameField.css";
 
 const cartaCoperta = require('../Images/Retro.jpg');
 
 
+
 export class GameField extends Component {
-  
   state = {
     primaCartaMia : "",
     secondaCartaMia : "",
@@ -25,13 +28,16 @@ export class GameField extends Component {
     briscolaEstratta: "",
     punteggioMio : 0,
     punteggioAvversario : 1,          // sbagliato apposta per vedere se setState corregge TODO: ripristinare a 0
-    idPartita : 0
+    idPartita : 0,
+    messaggioAlert : "Ciao"
   };
     
   
+
+  
   handleClick = event => {      // Metodo serve per sapere quale elemento ha passato attivato evento click (non si riesce direttamente dall'elemento)
     var id = event.currentTarget.id     // Elemento sul quale è stato fatto il click
-    window.alert(id);
+    //window.alert(id);
     
     if (socket.connected){    // verifichiamo di essere connessi prima di inviare il click
       switch (id) {
@@ -66,7 +72,7 @@ export class GameField extends Component {
   //listener(){
   componentDidMount() {
     socket.off("partitaIniziata").on("partitaIniziata", (partita, mano, briscolaEstrattaParam) => {
-      window.alert("PARTITA INIZIATA, MIOID: "+ socket.id)
+      notify("PARTITA INIZIATA, MIOID: "+ socket.id)
       // mano e partita vengono mandate come stringhe, vanno sistemate per formato corretto e poi convertite 
       var manoJSON = JSON.parse(mano.substring(mano.indexOf("{")))              // , mano.lastIndexOf("}")
       var partitaJSON = JSON.parse(partita.substring(partita.indexOf("{")))     // , partita.lastIndexOf("}")
@@ -105,11 +111,18 @@ export class GameField extends Component {
       const cartaBriscolaEstratta = briscolaEstrattaParam.ImagePath.substring(briscolaEstrattaParam.ImagePath.lastIndexOf("/")+1,briscolaEstrattaParam.ImagePath.lastIndexOf("."))
       this.setState({immBriscolaEstratta:require("../Images/Piacentine/"+cartaBriscolaEstratta+".jpg")})
       this.setState({briscolaEstratta:JSON.stringify(briscolaEstrattaParam)})
+
+
+      // Evento che viene scatenato quando si preme il pulsante "indietro" del browser
+      window.addEventListener('popstate', (event) => {
+        notify("La partita verrà conclusa")
+        socket.disconnect()
+      });
     })
   
     // RISPOSTA ALLA RICHIESTA DI METTERE UNA CARTA IN TAVOLA
     socket.off("cartaGiocataRes").on("cartaGiocataRes", (outcome, carta, numeroInTavola) =>{ 
-      window.alert("Risposta per carta giocata, esito " + outcome + " carta: " + carta)
+      //window.alert("Risposta per carta giocata, esito " + outcome + " carta: " + carta)
       if (outcome){
         // se esito positivo alla richiesta di giocare una carta
         switch (carta) {
@@ -138,14 +151,14 @@ export class GameField extends Component {
         }
       
       }else{
-        window.alert("Non puoi giocare la carta")
+        notify("Non puoi giocare la carta")
       }
 
     })
 
     // QUANDO L'AVVERSARIO GIOCA LA CARTA VIENE VISUALIZZATO GRAFICAMENTE
     socket.off("cartaGiocataAvversario").on("cartaGiocataAvversario", (imagePath, numero) => {
-      window.alert("L'avversario ha giocato una carta in tavola")
+      //notify("L'avversario ha giocato una carta in tavola")
       // si può rimuovere graficamente carta a caso 
       switch (this.randomNumberInRange(1,3)) {
         case 1:
@@ -158,7 +171,7 @@ export class GameField extends Component {
           this.setState({terzaCartaAvversario:""})
           break;
         default:
-          window.alert("Carta giocata avversario, case default")
+          notify("Carta giocata avversario, case default")
           break;
       }
 
@@ -176,7 +189,7 @@ export class GameField extends Component {
 
 
     socket.off("fineMano").on("fineMano", (partita, cartaPescata) => {
-      window.alert("FINE MANO")
+      //notify("FINE MANO")
       var partitaJSON = JSON.parse(partita.substring(partita.indexOf("{")))
       var cartaPescataJSON = JSON.parse(cartaPescata.substring(cartaPescata.indexOf("{")))
       // Aggiornamento punteggio
@@ -190,7 +203,7 @@ export class GameField extends Component {
       }
       // Confronto ChiInizia con socket.id e dico se tocca a me o avversario
       if (socket.id === partitaJSON.ChiInizia){
-        window.alert("Tocca a me")
+        notify("Tocca a me")
       }
 
       // Rimuovere le carte in tavola e aggiungere quelle in mano
@@ -223,7 +236,7 @@ export class GameField extends Component {
         this.setState({
           primaCartaAvversario:cartaCoperta
         })
-      } else if (this.state.secondaCartaMia === "") {
+      } else if (this.state.secondaCartaAvversario === "") {
         this.setState({
           secondaCartaAvversario:cartaCoperta
         })
@@ -238,7 +251,7 @@ export class GameField extends Component {
     })
 
     socket.on("avversarioDisconnesso", () => {
-      window.alert("L'avversario si è disconnesso")
+      notify("L'avversario si è disconnesso")
     })
   }
 
@@ -289,7 +302,8 @@ export class GameField extends Component {
           <div>{this.state.punteggioMio}</div>
         </div>
       </div>
-    </div>
+      </div>
+      <ToastContainer />
     </>
     )
   }

@@ -1,6 +1,9 @@
 import React, {Component} from 'react'
 import {Link} from 'react-router-dom'
 import {socket} from '../components/LoginPage.js'
+import { notify } from '../App.js'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export class InitialPage extends Component {
   state = {
@@ -14,7 +17,7 @@ export class InitialPage extends Component {
         this.setState({visibilitySpinner:"hidden"}) 
   } 
 
-  async gameTypeSelected(modalità){
+  gameTypeSelected(modalità){
     socket.emit('gameTypeSelected', modalità);
     this.setState({visibilitySpinner:"visible"})
     // Nell'attesa della risposta (evento socket partitaIniziata) si potrebbe rendere visibile il simbolo di attesa
@@ -32,6 +35,7 @@ export class InitialPage extends Component {
     <div className="spinner-border text-primary" role="status" id="spinner" style={{visibility:this.state.visibilitySpinner}}>
         <span className="visually-hidden"  style={{visibility:this.state.visibilitySpinner}}>Loading...</span>
     </div>
+    <ToastContainer />
     </>
   )}
 }

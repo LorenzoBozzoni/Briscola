@@ -1,6 +1,9 @@
 import React, {Component} from 'react'
 //import Sfondo1 from 'Images/SfondoIniziale.jpg';
 import { io } from 'socket.io-client'
+import { notify } from '../App.js'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 //import Spinner from "./Spinner.js"
 
@@ -33,30 +36,26 @@ export class LoginPage extends Component {
 
     access(accessType){
         // accessType può essere "login" o "signup"
-        window.alert("Nel metodo di accesso");
         this.setState({visibilitySpinner:"visible"})    // switch
         if (!socket.connected){
           socket.on('connect', () => {
-            window.alert(`Client connesso con id ${socket.id}`)       // connessione necessaria col server
+            notify(`Client connesso con id ${socket.id}`)       // connessione necessaria col server
           })
         }else{
-          window.alert(`Client connesso con id ${socket.id}`)
+          notify(`Client connesso con id ${socket.id}`)
           var email = document.getElementById("exampleInputEmail1").value;
           var password = document.getElementById("exampleInputPassword1").value;
           socket.emit('access', accessType, email, password); 
-          window.alert("Evento accesso creato")
         }
     
         socket.off("accessOutcome").on('accessOutcome', (accessOutcome) => {
-            window.alert("esito: " + accessOutcome);
-            window.alert("Ricezione evento accesso: " + accessOutcome);
             this.setState({visibilitySpinner:"hidden"})  // switch
             if (!accessOutcome) {
             //document.getElementById("").setAttribute()
-            window.alert("Autenticazione fallita");
+            notify("Autenticazione fallita");
             } else {
             document.location.href = document.location + "selectGame"; // ci si sposta nella pagina per selezionare il tipo di partita
-            window.alert("Autenticazione riuscita");
+            notify("Autenticazione riuscita");
             }
         })
     }
@@ -136,6 +135,7 @@ export class LoginPage extends Component {
                     </div>
                 </div>
             </div>
+            <ToastContainer />
         </>
       )
   }
