@@ -7,7 +7,7 @@ class Partita{
         this.Mazzo = new Mazzo()
         this.ManiRimanenti = Math.floor(this.Mazzo.carteRimanenti() / 2);     // Numero carte diviso il numero di giocatori
         this.Punteggio1 = 0
-        this.Punteggio2 = 15 // Testing per asimmetria 
+        this.Punteggio2 = 0 
         this.IdGiocatore1 = IdGiocatore1
         this.IdGiocatore2 = IdGiocatore2
         this.ChiInizia = IdGiocatore1
@@ -71,7 +71,6 @@ class Partita{
     // Carte giocate durante la mano, pos può essere 0 o 1 in base a quando è stata giocata la carta
     setCartaInTavola(value) {
         this.CartaInTavola = value;  
-        console.log("CARTAINTAVOLA: " + this.CartaInTavola.getIsBriscola() + " " + this.CartaInTavola.getImagePath() + " " + this.CartaInTavola.getSeme() + " " + this.CartaInTavola.getValore())
     }
 
     // Imposta l'id del giocatore che deve iniziare il turno successivo
@@ -93,6 +92,10 @@ class Partita{
 
     addToPunteggio2(valore) {
         this.Punteggio2 += valore;
+    }
+
+    pescaCarta(){
+        return this.Mazzo.pop()
     }
 }
 

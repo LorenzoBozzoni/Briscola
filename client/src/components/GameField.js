@@ -35,22 +35,30 @@ export class GameField extends Component {
     
     if (socket.connected){    // verifichiamo di essere connessi prima di inviare il click
       switch (id) {
-        case "FirstPlayerFirstCard":
+        case "FirstPlayerFirstCard": {
           socket.emit("cartaGiocataReq", this.state.idPartita, this.state.primaCartaMia)       
           break;
-        case "FirstPlayerSecondCard":
+        }
+        case "FirstPlayerSecondCard": {
           socket.emit("cartaGiocataReq", this.state.idPartita, this.state.secondaCartaMia)
           break;
-        case "FirstPlayerThirdCard":
+        }
+        case "FirstPlayerThirdCard": {
           socket.emit("cartaGiocataReq", this.state.idPartita, this.state.terzaCartaMia)
           break;
-        case "Mazzo":
-          socket.emit("pescaDalMazzo")
-          break;
+        }
         default:
           break;
       }
-
+      /*
+        case "Mazzo": {
+          if (this.state.primaCartaTavola === "" && this.state.secondaCartaTavola === ""){        // Si pesca dal mazzo solo quando non ci sono carte in tavola
+            socket.emit("pescaDalMazzoReq", this.state.idPartita)
+          }
+          
+          break;
+        }
+      */
     }
   };
 
@@ -106,15 +114,15 @@ export class GameField extends Component {
         // se esito positivo alla richiesta di giocare una carta
         switch (carta) {
           case this.state.primaCartaMia:
-            this.setState({primaCartaMia:"EMPTY"})     // Ovviamente allo svuotamento corrisponderà una "azione grafica" associata
+            this.setState({primaCartaMia:""})     // Ovviamente allo svuotamento corrisponderà una "azione grafica" associata
             this.setState({immPrimaCartaMia : ""})
             break;
           case this.state.secondaCartaMia:
-            this.setState({secondaCartaMia:"EMPTY"})
+            this.setState({secondaCartaMia:""})
             this.setState({immSecondaCartaMia : ""})
             break;
           case this.state.terzaCartaMia:
-            this.setState({terzaCartaMia:"EMPTY"})
+            this.setState({terzaCartaMia:""})
             this.setState({immTerzaCartaMia : ""})
             break;
           default:
@@ -141,13 +149,13 @@ export class GameField extends Component {
       // si può rimuovere graficamente carta a caso 
       switch (this.randomNumberInRange(1,3)) {
         case 1:
-          this.setState({primaCartaAvversario:"EMPTY"})
+          this.setState({primaCartaAvversario:""})
           break;
         case 2:
-          this.setState({secondaCartaAvversario:"EMPTY"})
+          this.setState({secondaCartaAvversario:""})
           break;
         case 3:
-          this.setState({terzaCartaAvversario:"EMPTY"})
+          this.setState({terzaCartaAvversario:""})
           break;
         default:
           window.alert("Carta giocata avversario, case default")
@@ -167,9 +175,66 @@ export class GameField extends Component {
     })
 
 
-    socket.on("fineMano", () => {
+    socket.off("fineMano").on("fineMano", (partita, cartaPescata) => {
+      window.alert("FINE MANO")
+      var partitaJSON = JSON.parse(partita.substring(partita.indexOf("{")))
+      var cartaPescataJSON = JSON.parse(cartaPescata.substring(cartaPescata.indexOf("{")))
       // Aggiornamento punteggio
+      if (socket.id === partitaJSON.IdGiocatore1) {
+        this.setState({punteggioMio:JSON.stringify(partitaJSON.Punteggio1)})
+        this.setState({punteggioAvversario:JSON.stringify(partitaJSON.Punteggio2)})
+      } else {
+        // inversione per avere visuale relativa a giocatore, altrimenti tutti e due vedono uguale
+        this.setState({punteggioAvversario:JSON.stringify(partitaJSON.Punteggio1)})
+        this.setState({punteggioMio:JSON.stringify(partitaJSON.Punteggio2)})
+      }
       // Confronto ChiInizia con socket.id e dico se tocca a me o avversario
+      if (socket.id === partitaJSON.ChiInizia){
+        window.alert("Tocca a me")
+      }
+
+      // Rimuovere le carte in tavola e aggiungere quelle in mano
+      const numeroCarta = cartaPescataJSON.ImagePath.substring(cartaPescataJSON.ImagePath.lastIndexOf("/")+1,cartaPescataJSON.ImagePath.lastIndexOf("."))
+      
+      this.setState({
+        primaCartaTavola:"",
+        secondaCartaTavola:""
+      })
+
+      // Bisogna capire quale carta è stata giocata per capire dove inserire quella appena pescata
+      if (this.state.primaCartaMia === "") {
+        this.setState({
+          immPrimaCartaMia:require("../Images/Piacentine/"+numeroCarta+".jpg"),
+          primaCartaMia:cartaPescata
+        })
+      } else if (this.state.secondaCartaMia === "") {
+        this.setState({
+          immSecondaCartaMia:require("../Images/Piacentine/"+numeroCarta+".jpg"),
+          secondaCartaMia:cartaPescata
+        })
+      } else {      // TODO: convertire in else if?
+        this.setState({
+          immTerzaCartaMia:require("../Images/Piacentine/"+numeroCarta+".jpg"),
+          terzaCartaMia:cartaPescata
+        })
+      } 
+
+      if (this.state.primaCartaAvversario === "") {
+        this.setState({
+          primaCartaAvversario:cartaCoperta
+        })
+      } else if (this.state.secondaCartaMia === "") {
+        this.setState({
+          secondaCartaAvversario:cartaCoperta
+        })
+      } else {      // TODO: convertire in else if?
+        this.setState({
+          terzaCartaAvversario:cartaCoperta
+        })
+      } 
+      
+      
+
     })
 
     socket.on("avversarioDisconnesso", () => {

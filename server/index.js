@@ -164,22 +164,36 @@ io.on("connection", (socket) =>{
           io.to(socket.id).emit("cartaGiocataRes", true, JSON.stringify(cartaGiocata),2)    // Stringify serve per fare ritornare come era quando passata come parametro
           io.to(partite[i].getAvversario(socket.id)).emit("cartaGiocataAvversario", cartaGiocata.ImagePath, 2)       // per aggiornamento grafica
           // Calcola vincitore
+          console.log("DOPO SEND")
           var primaCartaGiocata = partite[i].getCartaInTavola()
           var secondaCartaGiocata = tmpCarta
           var idVincitoreMano = "";
 
+          console.log("VALORE ---------> ",primaCartaGiocata.getValore())
+
           try{
             if (primaCartaGiocata.getIsBriscola() && secondaCartaGiocata.getIsBriscola()){
               // Entrambe le carte sono briscola, vince quella di valore maggiore
-              if (primaCartaGiocata.getValore() > secondaCartaGiocata.getValore()){
+              if (primaCartaGiocata.getValore() === secondaCartaGiocata.getValore()){
+                if (primaCartaGiocata.getNumero() > secondaCartaGiocata.getNumero()) {
+                  idVincitoreMano = partite[i].getAvversario(socket.id)
+                } else {
+                  idVincitoreMano = socket.id
+                }
+              }else if (primaCartaGiocata.getValore() > secondaCartaGiocata.getValore()) {
+                console.log("MANO: entrambe briscole, vince la prima perchè di valore maggiore")
                 idVincitoreMano = partite[i].getAvversario(socket.id)
-                //partite[i].setChiInizia(partite[i].getAvversario(socket.id))     // Il turno successivo è iniziato dall'avversario del giocatore nel metodo qua 
+              } else {
+                console.log("MANO: entrambe briscole, vince la seconda perchè di valore maggiore")
+                idVincitoreMano = socket.id
               }
             } else if (!primaCartaGiocata.getIsBriscola() && secondaCartaGiocata.getIsBriscola()) {
+              console.log("MANO: la seconda è briscola mentre la prima no, vince la seconda")
               // Solo la seconda è briscola, vince la seconda
               idVincitoreMano = socket.id
               //partite[i].setChiInizia(socket.id)
             } else if (primaCartaGiocata.getIsBriscola() && !secondaCartaGiocata.getIsBriscola()) {
+              console.log("MANO: la prima è briscola mentre la seconda no, vince la prima")
               // Solo la prima è briscola, vince la prima
               idVincitoreMano = partite[i].getAvversario(socket.id)
               //partite[i].setChiInizia(partite[i].getAvversario(socket.id))
@@ -188,13 +202,16 @@ io.on("connection", (socket) =>{
               if (primaCartaGiocata.getSeme() === secondaCartaGiocata.getSeme()){
                 // Vince quella di valore maggiore
                 if (primaCartaGiocata.getValore() > secondaCartaGiocata.getValore()){
+                  console.log("MANO: nessuna delle due è briscola, sono di seme uguale e la prima è maggiore, vince la prima")
                   idVincitoreMano = partite[i].getAvversario(socket.id)
                   //partite[i].setChiInizia(partite[i].getAvversario(socket.id))     // Il turno successivo è iniziato dall'avversario del giocatore nel metodo qua 
                 } else{
+                  console.log("MANO: nessuna delle due è briscola, sono di seme uguale e la seconda è maggiore, vince la seconda")
                   idVincitoreMano = socket.id
                   //partite[i].setChiInizia(socket.id)
                 }
               } else {
+                console.log("MANO: nessuna delle due è briscola, sono di seme diverso, vince la prima")
                 // Vince la prima giocata
                 idVincitoreMano = partite[i].getAvversario(socket.id)
                 //partite[i].setChiInizia(partite[i].getAvversario(socket.id))
@@ -207,10 +224,12 @@ io.on("connection", (socket) =>{
             io.to(socket.id).emit("cartaGiocataRes", false)
           }
 
+          console.log("DOPO CATCH")
 
           // Fare visualizzare la prima e la seconda carta giocata
 
           // Setta nuovo ChiGioca
+          console.log("idvincitoremano --> ",idVincitoreMano)
           partite[i].setChiInizia(idVincitoreMano)
           // Calcola punteggio
           if (partite[i].getIdGiocatore1() === idVincitoreMano){
@@ -218,11 +237,15 @@ io.on("connection", (socket) =>{
           }else{
             partite[i].addToPunteggio2(primaCartaGiocata.getValore() + secondaCartaGiocata.getValore())
           }
-          // Ritorno messaggio e aggiornamento
-          io.to(socket.id).emit("fineMano")
-          io.to(partite[i].getAvversario(socket.id)).emit("fineMano" )  
+          // Ritorno messaggio e aggiornamento + carta pescata automaticamente per entrambi i giocatori (in ordine)
+          io.to(socket.id).emit("fineMano", JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))
+          io.to(partite[i].getAvversario(socket.id)).emit("fineMano",  JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))  
+          console.log("DOPO ULTIME SEND")
+          console.log(partite[i])
           // Svuota CartaInTavola
+          partite[i].setCartaInTavola(null)
 
+          
         }else{
           io.to(socket.id).emit("cartaGiocataRes", false)
         }
@@ -232,6 +255,9 @@ io.on("connection", (socket) =>{
       }
     }
   })
+
+
+
 
   // PER LA DISCONNESSIONE
   // TODO: non funziona, sostituire socket.to() con io.to()
