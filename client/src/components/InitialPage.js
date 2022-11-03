@@ -3,7 +3,14 @@ import {Link} from 'react-router-dom'
 import {socket} from '../components/LoginPage.js'
 import { notify } from '../App.js'
 import { ToastContainer, toast } from 'react-toastify';
+import {Navbar} from './Navbar.js'
 import 'react-toastify/dist/ReactToastify.css';
+
+
+const singolo = require("../Images/Singolo.jpg")
+const multi = require("../Images/ConAvversari.jpg")
+const friend = require("../Images/ConAvversario1.jpg")
+
 
 export class InitialPage extends Component {
   state = {
@@ -27,10 +34,18 @@ export class InitialPage extends Component {
   render (){
     return(
     <>
-    <div className="d-grid gap-2 d-md-block">
-        <button className="btn btn-primary" type="button" onClick={() => this.gameTypeSelected("single")}><Link to="./partita">Single Player</Link></button>
-        <button className="btn btn-primary" type="button" onClick={() => this.gameTypeSelected("multi")}><Link to="./partita">Random multiplayer</Link></button>
-        <button className="btn btn-primary" type="button" onClick={() => this.gameTypeSelected("friend")}>Play with a friend</button>
+    <Navbar>ehi</Navbar>
+    <div className="d-grid gap-2 mx-auto">
+      <Link to="./partita" className="btn btn-primary" id="SingleGameButton" onClick={() => this.gameTypeSelected("single")}>
+        <p className='gameTypeLabel'>SINGLE PLAYER</p>
+      </Link>
+      <Link to="./partita" className="btn btn-primary" id="MultiGameButton" onClick={() => this.gameTypeSelected("multi")}>
+        <p className='gameTypeLabel'>RANDOM PLAYER</p>
+      </Link>
+
+      <Link to="./partita" className="btn btn-primary" id="FriendGameButton" onClick={() => this.gameTypeSelected("friend")}>
+        <p className='gameTypeLabel'>PLAY WITH A FRIEND</p>
+      </Link>
     </div>
     <div className="spinner-border text-primary" role="status" id="spinner" style={{visibility:this.state.visibilitySpinner}}>
         <span className="visually-hidden"  style={{visibility:this.state.visibilitySpinner}}>Loading...</span>
@@ -40,4 +55,23 @@ export class InitialPage extends Component {
   )}
 }
 //<Link to="./partita">Single Player</Link>
+
+
+/*
+<div className="d-grid gap-2 d-md-block">
+      <Link to="./partita">
+        <button className="btn btn-primary" type="button" onClick={() => this.gameTypeSelected("single")}>Single Player</button>
+      </Link>
+      <Link to="./partita">
+        <button className="btn btn-primary" type="button" onClick={() => this.gameTypeSelected("multi")}>Random multiplayer</button>
+      </Link>
+      
+        <button className="btn btn-primary" type="button" onClick={() => this.gameTypeSelected("friend")}>Play with a friend</button>
+    </div>
+
+
+Per centrare il testo dentro il button, non funziona
+
+    <p className="text-center">Random multiplayer</p> 
+*/
 

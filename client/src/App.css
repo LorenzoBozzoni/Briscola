@@ -41,6 +41,27 @@ body > #root > div {
   height: 100vh;
 }
 
+#SingleGameButton {
+  background-image: url("./Images/Singolo.jpg");
+  background-size: cover;
+}
+
+
+#MultiGameButton {
+  background-image: url("./Images/../Images/ConAvversari.jpg");
+  background-size: cover;
+}
+
+#FriendGameButton {
+  background-image: url("./Images/../Images/ConAvversario1.jpg");
+  background-size: cover;
+}
+
+.gameTypeLabel {
+  font-family: Rockwell;
+  font-weight: 300;
+  font-size: 20pt;
+}
 /*
 // USATI PER IMMAGINI CENTRATE CARTE DEL CAMPO DI GIOCO 
 // SOURCE: https://stackoverflow.com/questions/14142378/how-can-i-fill-a-div-with-an-image-while-keeping-it-proportional

@@ -1,5 +1,4 @@
 import {React, Component} from 'react'
-import {Navbar} from './Navbar.js'
 import 'bootstrap/dist/css/bootstrap.css';
 import {socket} from "./LoginPage.js"
 import { notify } from '../App.js'
@@ -265,7 +264,6 @@ export class GameField extends Component {
   render() { 
     return (
       <>
-      <Navbar>ehi</Navbar>
       <div className="container text-center">   
           
       <div className="row">
