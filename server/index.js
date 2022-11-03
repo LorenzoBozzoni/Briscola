@@ -296,8 +296,8 @@ io.on("connection", (socket) =>{
 })
 
 
-app.get('/miao', (req, res) => {
-  res.sendStatus(500)
+app.get('/ciao', (req, res) => {
+  res.json({"miao":2})
 })
 
 
