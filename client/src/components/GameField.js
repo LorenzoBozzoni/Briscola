@@ -114,8 +114,10 @@ export class GameField extends Component {
 
       // Evento che viene scatenato quando si preme il pulsante "indietro" del browser
       window.addEventListener('popstate', (event) => {
-        notify("La partita verrà conclusa")
-        socket.disconnect()
+        if (this.state.idPartita !== 0){
+          notify("La partita verrà conclusa")
+        }
+        socket.emit("abbandonaPartita")
       });
     })
   
@@ -205,13 +207,25 @@ export class GameField extends Component {
         notify("Tocca a me")
       }
 
-      // Rimuovere le carte in tavola e aggiungere quelle in mano
-      const numeroCarta = cartaPescataJSON.ImagePath.substring(cartaPescataJSON.ImagePath.lastIndexOf("/")+1,cartaPescataJSON.ImagePath.lastIndexOf("."))
+      var str = "Carte rimanenti "+ partitaJSON.CarteRimanenti + " tipo: " + typeof(partitaJSON.CarteRimanenti)
+      notify(str)
+
+      if (partitaJSON.CarteRimanenti === 1){
+        this.setState({immBriscolaEstratta:""})
+      } else if (partitaJSON.CarteRimanenti === 0){
+        document.getElementById("Mazzo").setAttribute("visibility","hidden")
+
+      } 
       
       this.setState({
         primaCartaTavola:"",
         secondaCartaTavola:""
       })
+
+
+      if(cartaPescata !== {}) {  // se non è vuota
+      // Rimuovere le carte in tavola e aggiungere quelle in mano
+      const numeroCarta = cartaPescataJSON.ImagePath.substring(cartaPescataJSON.ImagePath.lastIndexOf("/")+1,cartaPescataJSON.ImagePath.lastIndexOf("."))
 
       // Bisogna capire quale carta è stata giocata per capire dove inserire quella appena pescata
       if (this.state.primaCartaMia === "") {
@@ -244,13 +258,21 @@ export class GameField extends Component {
           terzaCartaAvversario:cartaCoperta
         })
       } 
-      
+    }
       
 
     })
 
-    socket.on("avversarioDisconnesso", () => {
+    socket.off("finePartita").on("finePartita", () => {
+      notify("La partita è finita")
+    })
+
+    socket.off("disconnessioneAvversario").on("disconnessioneAvversario", () => {
       notify("L'avversario si è disconnesso")
+    })
+
+    socket.off("abbandonoAvversario").on("abbandonoAvversario", () => {
+      notify("L'avversario ha abbandonato la partita")
     })
   }
 
@@ -277,11 +299,11 @@ export class GameField extends Component {
           <img src={this.state.terzaCartaAvversario} alt=""></img>
         </div>
         <div className="col-sm" id="SecondPlayerPoints" onClick={this.handleClick}>
-          <div>{this.state.punteggioAvversario}</div>
+          <div className="Punteggio">{this.state.punteggioAvversario}</div>
         </div>
       </div>
       <div className="row">
-        <div className="col-sm"><img src={cartaCoperta} style={{float: "left"}}></img></div>     
+        <div className="col-sm"><img src={cartaCoperta} id="Mazzo" style={{float: "left"}}></img></div>     
         <div className="col-sm"><img src={this.state.immBriscolaEstratta} style={{float: "left",transform: "rotate(90deg)"}}></img></div>      
         <div className="col-sm"><img src={this.state.primaCartaTavola} alt=""></img></div>
         <div className="col-sm"><img src={this.state.secondaCartaTavola} alt=""></img></div>
@@ -297,7 +319,7 @@ export class GameField extends Component {
           <img src={this.state.immTerzaCartaMia} alt="" style={{position : "relative",bottom : 0}}></img>
         </div>
         <div className="col-sm" id="FirstPlayerPoints" onClick={this.handleClick}>
-          <div>{this.state.punteggioMio}</div>
+          <div className="Punteggio">{this.state.punteggioMio}</div>
         </div>
       </div>
       </div>

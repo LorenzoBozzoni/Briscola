@@ -5,7 +5,7 @@ class Partita{
     constructor(IdGiocatore1, IdGiocatore2){
         this.IdPartita = Math.floor(Math.random()*1000);
         this.Mazzo = new Mazzo()
-        this.ManiRimanenti = Math.floor(this.Mazzo.carteRimanenti() / 2);     // Numero carte diviso il numero di giocatori
+        this.CarteRimanenti = this.Mazzo.carteRimanenti();     // Numero carte rimanenti
         this.Punteggio1 = 0
         this.Punteggio2 = 0 
         this.IdGiocatore1 = IdGiocatore1
@@ -13,7 +13,7 @@ class Partita{
         this.ChiInizia = IdGiocatore1
         this.CartaInTavola = null;    
         this.BriscolaEstratta = this.Mazzo.pop()
-
+        
         this.BriscolaEstratta.setIsBriscola(true)
         this.Mazzo.impostaBriscola(this.BriscolaEstratta.getSeme())
     }
@@ -23,9 +23,9 @@ class Partita{
         return this.Mazzo;
     }
 
-    // Ritorna il numero di mani ancora da giocare
-    getManiRimanenti() {
-        return this.ManiRimanenti;
+    getCarteRimanenti(){
+        this.CarteRimanenti = this.Mazzo.carteRimanenti()
+        return this.Mazzo.carteRimanenti()
     }
 
     // Ritorna l'id del giocatore1
@@ -95,8 +95,16 @@ class Partita{
     }
 
     pescaCarta(){
-        return this.Mazzo.pop()
+        var estratta = this.Mazzo.pop()
+
+        if (estratta !== undefined){
+            return estratta;
+        }else{
+            return {};
+        }
     }
+
+    
 }
 
 module.exports = Partita

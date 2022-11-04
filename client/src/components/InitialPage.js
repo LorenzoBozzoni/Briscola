@@ -34,7 +34,11 @@ export class InitialPage extends Component {
   render (){
     return(
     <>
-    <Navbar>ehi</Navbar>
+    <Navbar>    
+      <div className="spinner-border text-primary" role="status" id="spinner" style={{visibility:this.state.visibilitySpinner}}>
+        <span className="visually-hidden"  style={{visibility:this.state.visibilitySpinner}}>Loading...</span>
+    </div>
+    </Navbar>
     <div className="d-grid gap-2 mx-auto">
       <Link to="./partita" className="btn btn-primary" id="SingleGameButton" onClick={() => this.gameTypeSelected("single")}>
         <p className='gameTypeLabel'>SINGLE PLAYER</p>
@@ -46,9 +50,6 @@ export class InitialPage extends Component {
       <Link to="./partita" className="btn btn-primary" id="FriendGameButton" onClick={() => this.gameTypeSelected("friend")}>
         <p className='gameTypeLabel'>PLAY WITH A FRIEND</p>
       </Link>
-    </div>
-    <div className="spinner-border text-primary" role="status" id="spinner" style={{visibility:this.state.visibilitySpinner}}>
-        <span className="visually-hidden"  style={{visibility:this.state.visibilitySpinner}}>Loading...</span>
     </div>
     <ToastContainer />
     </>

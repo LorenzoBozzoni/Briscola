@@ -67,7 +67,7 @@ class Mazzo {
             }
         }
         var myString = JSON.stringify(this.mazzo)
-        //console.log("MAZZO CREATO --> ",myString)
+        console.log("MAZZO CREATO --> ",myString)
     }
     
     shuffle(array) {
@@ -106,6 +106,10 @@ class Mazzo {
     
     getMano(){
         return {"PrimaCarta":this.pop(), "SecondaCarta":this.pop(), "TerzaCarta":this.pop()}
+    }
+
+    getMazzo(){
+        return this.mazzo;
     }
 }
 

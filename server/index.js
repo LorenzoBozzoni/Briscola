@@ -163,6 +163,7 @@ io.on("connection", (socket) =>{
           console.log("SECONDA CARTA IN TAVOLA GIOCATA")
           io.to(socket.id).emit("cartaGiocataRes", true, JSON.stringify(cartaGiocata),2)    // Stringify serve per fare ritornare come era quando passata come parametro
           io.to(partite[i].getAvversario(socket.id)).emit("cartaGiocataAvversario", cartaGiocata.ImagePath, 2)       // per aggiornamento grafica
+         
           // Calcola vincitore
           console.log("DOPO SEND")
           var primaCartaGiocata = partite[i].getCartaInTavola()
@@ -237,13 +238,37 @@ io.on("connection", (socket) =>{
           }else{
             partite[i].addToPunteggio2(primaCartaGiocata.getValore() + secondaCartaGiocata.getValore())
           }
+
+          //partite[i].updateNumeroManiRimanenti()
+          //console.log("Numero di carte rimanenti ---------------------------> ",partite[i].getMazzo().getCarteRimanenti())
+          console.log("Numero di carte rimanenti ---------------------------> ",partite[i].getCarteRimanenti())
+
           // Ritorno messaggio e aggiornamento + carta pescata automaticamente per entrambi i giocatori (in ordine)
-          io.to(socket.id).emit("fineMano", JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))
-          io.to(partite[i].getAvversario(socket.id)).emit("fineMano",  JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))  
+          if (partite[i].getCarteRimanenti() === 1){
+            // Il secondo giocatore pesca la carta sotto
+            var cartaRimanente = partite[i].pescaCarta()
+            console.log("Carta rimanente nel mazzo " + JSON.stringify(cartaRimanente))
+            io.to(socket.id).emit("fineMano", JSON.stringify(partite[i]), JSON.stringify(cartaRimanente))
+            io.to(partite[i].getAvversario(socket.id)).emit("fineMano",  JSON.stringify(partite[i]), JSON.stringify(partite[i].getBriscolaEstratta()))  
+          }else if (partite[i].getCarteRimanenti() === 0){
+            // La partita è finita!
+
+
+            io.to(socket.id).emit("finePartita")
+            io.to(partite[i].getAvversario(socket.id)).emit("finePartita")  
+          }else {
+            io.to(socket.id).emit("fineMano", JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))
+            io.to(partite[i].getAvversario(socket.id)).emit("fineMano",  JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))  
+          }
+
+          
           console.log("DOPO ULTIME SEND")
           console.log(partite[i])
+
           // Svuota CartaInTavola
           partite[i].setCartaInTavola(null)
+
+          
 
           
         }else{
@@ -262,37 +287,13 @@ io.on("connection", (socket) =>{
   // PER LA DISCONNESSIONE
   // TODO: non funziona, sostituire socket.to() con io.to()
   socket.on("disconnect", () =>{
-    console.log("user disconnected ", socket.id);
-
-    // Remove from waiting room if (in it) and disconnected
-    if(single.find(item => item === (socket.id).toString())){
-      single.pop(socket.id)
-    } else if(multi.find(item => item === (socket.id).toString())){
-      multi.pop(socket.id)
-    } else if(single.find(item => item === (socket.id).toString())){
-      friend.pop(socket.id)
-    }
-
-    var sendTo = ""
-    // Remove from match 
-    for (let i = 0; i < partite.length; i++) {
-      if (partite[i].getIdGiocatore1() === socket.id){
-        sendTo = partite[i].getIdGiocatore2()
-      } else if (partite[i].getIdGiocatore2() === socket.id){
-        sendTo = partite[i].getIdGiocatore1()
-      }
-    }
-    socket.to(sendTo).emit("disconnessioneAvversario")
-    console.log("Evento disconnessione avversario inviato a -> " + sendTo)
-
-
-    // Chiusura robe strane
-    /*
-    socket.removeAllListeners('send message');
-    socket.removeAllListeners('disconnect');
-    io.removeAllListeners('connection');
-    */
+    uscita(socket.id, true)
   })
+
+  socket.on("abbandonaPartita", () => {
+    uscita(socket.id, false)
+  })
+  
 })
 
 
@@ -311,3 +312,43 @@ server.listen(3001, () => {
 // TODO: implementare pannello per controllo socket connesse al server
 instrument(io, {auth: false})
 
+
+// Disconnesso è un valore booleano che indica se il giocatore si è disconnesso (true) o ha soltanto abbandonato la partita (false)
+function uscita(id, disconnesso){
+  console.log("user disconnected ", id);
+
+  // Remove from waiting room if (in it) and disconnected
+  if(single.find(item => item === (id).toString())){
+    single.pop(id)
+  } else if(multi.find(item => item === (id).toString())){
+      multi.pop(id)
+  } else if(single.find(item => item === (id).toString())){
+    friend.pop(id)
+  }
+
+  var sendTo = ""
+  // Remove from match 
+  for (let i = 0; i < partite.length; i++) {
+    if (partite[i].getIdGiocatore1() === id){
+      sendTo = partite[i].getIdGiocatore2()
+    } else if (partite[i].getIdGiocatore2() === id){
+      sendTo = partite[i].getIdGiocatore1()
+    }
+  }
+
+  if (disconnesso){
+    io.to(sendTo).emit("disconnessioneAvversario")
+  }else{
+    io.to(sendTo).emit("abbandonoAvversario")
+  }
+
+  console.log("Evento disconnessione avversario inviato a -> " + sendTo)
+
+
+  // Chiusura robe strane
+  /*
+  socket.removeAllListeners('send message');
+  socket.removeAllListeners('disconnect');
+  io.removeAllListeners('connection');
+  */
+}

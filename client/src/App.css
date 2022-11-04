@@ -62,6 +62,41 @@ body > #root > div {
   font-weight: 300;
   font-size: 20pt;
 }
+
+.btn-primary {
+  width: 50%;
+  margin-left: 25%;
+  margin-right: 25%;
+}
+
+.mb-3 {
+  max-width:inherit;
+}
+
+@keyframes pswAnimation {
+  0%   {top:-100px;}
+  100% {top:50px;}
+}
+
+#hiddenTxtPassword {
+  position:relative;
+  animation-name: pswAnimation;
+  animation-duration: 1s;
+  animation-direction: alternate;
+}
+
+.Punteggio {
+  font-size: 35pt;
+  font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-weight: 300;
+  margin: 50%;
+}
+
+
+
+
+
+
 /*
 // USATI PER IMMAGINI CENTRATE CARTE DEL CAMPO DI GIOCO 
 // SOURCE: https://stackoverflow.com/questions/14142378/how-can-i-fill-a-div-with-an-image-while-keeping-it-proportional
