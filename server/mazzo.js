@@ -55,7 +55,7 @@ class Mazzo {
                         break
                     }
                 }
-                ImagePath = "../Images/Piacentine/"+(j+(i*10)) + ".jpg"
+                ImagePath = "../Images/Napoletane/"+(j+(i*10)) + ".jpg"
                 //ImagePath = "../../Piacentine/"+(j+(i*10)) + ".jpg"
                 console.log("Numero carta -> ",(j+(i*10)))
                 console.log("Numero del seme -> ", j)

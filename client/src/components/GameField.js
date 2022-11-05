@@ -299,7 +299,7 @@ export class GameField extends Component {
           <img className="rounded-4" src={this.state.terzaCartaAvversario} alt=""></img>
         </div>
         <div className="col-sm" id="SecondPlayerPoints" onClick={this.handleClick}>
-          <div className="Punteggio">{this.state.punteggioAvversario}</div>
+          <div className="Punteggio rounded-5 bg-light">{this.state.punteggioAvversario}</div>
         </div>
       </div>
       <div className="row">
@@ -319,7 +319,7 @@ export class GameField extends Component {
           <img className="rounded-4" src={this.state.immTerzaCartaMia} alt="" style={{position : "relative",bottom : 0}}></img>
         </div>
         <div className="col-sm" id="FirstPlayerPoints" onClick={this.handleClick}>
-          <div className="Punteggio">{this.state.punteggioMio}</div>
+          <div className="Punteggio rounded-5 bg-light">{this.state.punteggioMio}</div>
         </div>
       </div>
       </div>
