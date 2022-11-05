@@ -85,9 +85,9 @@ export class GameField extends Component {
       const percorsoSeconda = manoJSON.SecondaCarta.ImagePath.substring(manoJSON.SecondaCarta.ImagePath.lastIndexOf("/")+1,manoJSON.SecondaCarta.ImagePath.lastIndexOf("."))
       const percorsoTerza = manoJSON.TerzaCarta.ImagePath.substring(manoJSON.TerzaCarta.ImagePath.lastIndexOf("/")+1,manoJSON.TerzaCarta.ImagePath.lastIndexOf("."))
       // Non si può fare require(manoJSON.PrimaCarta.ImagePath)
-      this.setState({immPrimaCartaMia:require("../Images/Piacentine/" + percorsoPrima + ".jpg")})
-      this.setState({immSecondaCartaMia:require("../Images/Piacentine/" + percorsoSeconda + ".jpg")})
-      this.setState({immTerzaCartaMia:require("../Images/Piacentine/" + percorsoTerza + ".jpg")})
+      this.setState({immPrimaCartaMia:require("../Images/Napoletane/" + percorsoPrima + ".jpg")})
+      this.setState({immSecondaCartaMia:require("../Images/Napoletane/" + percorsoSeconda + ".jpg")})
+      this.setState({immTerzaCartaMia:require("../Images/Napoletane/" + percorsoTerza + ".jpg")})
 
       // Carte avversario
       this.setState({primaCartaAvversario:cartaCoperta})
@@ -108,7 +108,7 @@ export class GameField extends Component {
 
       briscolaEstrattaParam = JSON.parse(briscolaEstrattaParam.substring(briscolaEstrattaParam.indexOf("{")))
       const cartaBriscolaEstratta = briscolaEstrattaParam.ImagePath.substring(briscolaEstrattaParam.ImagePath.lastIndexOf("/")+1,briscolaEstrattaParam.ImagePath.lastIndexOf("."))
-      this.setState({immBriscolaEstratta:require("../Images/Piacentine/"+cartaBriscolaEstratta+".jpg")})
+      this.setState({immBriscolaEstratta:require("../Images/Napoletane/"+cartaBriscolaEstratta+".jpg")})
       this.setState({briscolaEstratta:JSON.stringify(briscolaEstrattaParam)})
 
 
@@ -146,9 +146,9 @@ export class GameField extends Component {
         var cartaJSON = JSON.parse(carta.substring(carta.indexOf("{")))
         const numeroCarta = cartaJSON.ImagePath.substring(cartaJSON.ImagePath.lastIndexOf("/")+1,cartaJSON.ImagePath.lastIndexOf("."))        
         if (numeroInTavola === 1) {
-          this.setState({primaCartaTavola:require("../Images/Piacentine/"+numeroCarta+".jpg")})
+          this.setState({primaCartaTavola:require("../Images/Napoletane/"+numeroCarta+".jpg")})
         } else {
-          this.setState({secondaCartaTavola:require("../Images/Piacentine/"+numeroCarta+".jpg")})
+          this.setState({secondaCartaTavola:require("../Images/Napoletane/"+numeroCarta+".jpg")})
         }
       
       }else{
@@ -179,9 +179,9 @@ export class GameField extends Component {
       // visualizzazione in tavola della carta giocata
       const numeroCarta = imagePath.substring(imagePath.lastIndexOf("/")+1,imagePath.lastIndexOf("."))        // TODO: funzione?
       if (numero === 1) {
-        this.setState({primaCartaTavola:require("../Images/Piacentine/"+numeroCarta+".jpg")})
+        this.setState({primaCartaTavola:require("../Images/Napoletane/"+numeroCarta+".jpg")})
       } else {
-        this.setState({secondaCartaTavola:require("../Images/Piacentine/"+numeroCarta+".jpg")})
+        this.setState({secondaCartaTavola:require("../Images/Napoletane/"+numeroCarta+".jpg")})
       }
 
       
@@ -230,17 +230,17 @@ export class GameField extends Component {
       // Bisogna capire quale carta è stata giocata per capire dove inserire quella appena pescata
       if (this.state.primaCartaMia === "") {
         this.setState({
-          immPrimaCartaMia:require("../Images/Piacentine/"+numeroCarta+".jpg"),
+          immPrimaCartaMia:require("../Images/Napoletane/"+numeroCarta+".jpg"),
           primaCartaMia:cartaPescata
         })
       } else if (this.state.secondaCartaMia === "") {
         this.setState({
-          immSecondaCartaMia:require("../Images/Piacentine/"+numeroCarta+".jpg"),
+          immSecondaCartaMia:require("../Images/Napoletane/"+numeroCarta+".jpg"),
           secondaCartaMia:cartaPescata
         })
       } else {      // TODO: convertire in else if?
         this.setState({
-          immTerzaCartaMia:require("../Images/Piacentine/"+numeroCarta+".jpg"),
+          immTerzaCartaMia:require("../Images/Napoletane/"+numeroCarta+".jpg"),
           terzaCartaMia:cartaPescata
         })
       } 
@@ -286,37 +286,37 @@ export class GameField extends Component {
   render() { 
     return (
       <>
-      <div className="container text-center">   
+      <div className="container text-center bg-success">   
           
       <div className="row">
         <div className="col-sm" id="SecondPlayerFirstCard" onClick={this.handleClick}>
-          <img src={this.state.primaCartaAvversario} alt=""></img>
+          <img className="rounded-4" src={this.state.primaCartaAvversario} alt=""></img>
         </div>
         <div className="col-sm" id="SecondPlayerSecondCard" onClick={this.handleClick}>
-          <img src={this.state.secondaCartaAvversario} alt=""></img>
+          <img className="rounded-4" src={this.state.secondaCartaAvversario} alt=""></img>
         </div>
         <div className="col-sm" id="SecondPlayerThirdCard" onClick={this.handleClick}>
-          <img src={this.state.terzaCartaAvversario} alt=""></img>
+          <img className="rounded-4" src={this.state.terzaCartaAvversario} alt=""></img>
         </div>
         <div className="col-sm" id="SecondPlayerPoints" onClick={this.handleClick}>
           <div className="Punteggio">{this.state.punteggioAvversario}</div>
         </div>
       </div>
       <div className="row">
-        <div className="col-sm"><img src={cartaCoperta} id="Mazzo" style={{float: "left"}}></img></div>     
-        <div className="col-sm"><img src={this.state.immBriscolaEstratta} style={{float: "left",transform: "rotate(90deg)"}}></img></div>      
-        <div className="col-sm"><img src={this.state.primaCartaTavola} alt=""></img></div>
-        <div className="col-sm"><img src={this.state.secondaCartaTavola} alt=""></img></div>
+        <div className="col-sm"><img className="rounded-4" src={cartaCoperta} id="Mazzo" style={{float: "left"}}></img></div>     
+        <div className="col-sm"><img className="rounded-4" src={this.state.immBriscolaEstratta} style={{float: "left",transform: "rotate(90deg)"}}></img></div>      
+        <div className="col-sm"><img className="rounded-4" src={this.state.primaCartaTavola} alt=""></img></div>
+        <div className="col-sm"><img className="rounded-4" src={this.state.secondaCartaTavola} alt=""></img></div>
       </div>
       <div className="row">
         <div className="col-sm" id="FirstPlayerFirstCard" onClick={this.handleClick}>
-          <img src={this.state.immPrimaCartaMia} alt="" style={{ position : "relative",bottom: 0}}></img>
+          <img className="rounded-4" src={this.state.immPrimaCartaMia} alt="" style={{ position : "relative",bottom: 0}}></img>
         </div>
         <div className="col-sm" id="FirstPlayerSecondCard" onClick={this.handleClick}>
-          <img src={this.state.immSecondaCartaMia} alt="" style={{position : "relative",bottom : 0}}></img>
+          <img className="rounded-4" src={this.state.immSecondaCartaMia} alt="" style={{position : "relative",bottom : 0}}></img>
         </div>
         <div className="col-sm" id="FirstPlayerThirdCard" onClick={this.handleClick}>
-          <img src={this.state.immTerzaCartaMia} alt="" style={{position : "relative",bottom : 0}}></img>
+          <img className="rounded-4" src={this.state.immTerzaCartaMia} alt="" style={{position : "relative",bottom : 0}}></img>
         </div>
         <div className="col-sm" id="FirstPlayerPoints" onClick={this.handleClick}>
           <div className="Punteggio">{this.state.punteggioMio}</div>
