@@ -28,25 +28,25 @@ class Mazzo {
                     break
                 }
             }
-            for (var j = 1; j < 11; j++) {
+            for (var j = 0; j < 10; j++) {
                 switch (j){
-                    case 1: {
+                    case 0: {
                         valore = 11;     // asso
                         break
                     }
-                    case 3: {
+                    case 2: {
                         valore = 10;     // tre
                         break
                     } 
-                    case 8: {
+                    case 7: {
                         valore = 2;      // fante
                         break
                     }
-                    case 9: {
+                    case 8: {
                         valore = 3;      // cavallo
                         break
                     }
-                    case 10: {
+                    case 9: {
                         valore = 4;     // re 
                         break
                     }
@@ -55,7 +55,7 @@ class Mazzo {
                         break
                     }
                 }
-                ImagePath = "../Images/Piacentine/"+(j+(i*10)) + ".jpg"
+                ImagePath = "../Images/Piacentine/"+(j+(i*10)+1) + ".jpg"
                 //ImagePath = "../../Piacentine/"+(j+(i*10)) + ".jpg"
                 console.log("Numero carta -> ",(j+(i*10)))
                 console.log("Numero del seme -> ", j)
@@ -63,34 +63,19 @@ class Mazzo {
                 console.log("Seme -> ", seme)
                 console.log("ImagePath -> ", ImagePath)
                 console.log("-----------------------------------")
-                this.mazzo[(j+(i*10))] = new Carta(valore, j, seme, false, ImagePath)       // di default non impostiamo una briscola
+                this.mazzo[(j+(i*10))] = new Carta(valore, j+1, seme, false, ImagePath)       // di default non impostiamo una briscola
             }
         }
         var myString = JSON.stringify(this.mazzo)
-        console.log("MAZZO CREATO --> ",myString)
+        console.log("Lunghezza array --> ",this.mazzo.length)
+        
     }
+
     
-    shuffle(array) {
-        let currentIndex = array.length,  randomIndex;
-
-        // While there remain elements to shuffle.
-        while (currentIndex != 0) {
-      
-          // Pick a remaining element.
-          randomIndex = Math.floor(Math.random() * currentIndex);
-          currentIndex--;
-      
-          // And swap it with the current element.
-          [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
-        }
-      
-        return array;
-    }
-
     pop() {
         return this.mazzo.pop()
     }
+    
 
     impostaBriscola(briscola) {
         for (var i = 1; i < this.mazzo.length; i++) {
@@ -106,10 +91,6 @@ class Mazzo {
     
     getMano(){
         return {"PrimaCarta":this.pop(), "SecondaCarta":this.pop(), "TerzaCarta":this.pop()}
-    }
-
-    getMazzo(){
-        return this.mazzo;
     }
 }
 

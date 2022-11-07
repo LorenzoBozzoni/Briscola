@@ -94,10 +94,6 @@ io.on("connection", (socket) =>{
         single.push(socket.id);
         var tmp = new Partita(socket.id, "server")    // Creiamo subito una nuova partita con questi due avversari
         partite.push(tmp)
-        console.log(JSON.stringify(partite))
-        //console.log({tmp})
-  
-        console.log(tmp.getMazzo().getMano())
         io.to(socket.id).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))
         break;
       }
@@ -113,19 +109,9 @@ io.on("connection", (socket) =>{
           var avversario = multi.reverse().pop()          // Id dell'avversario
           var tmp = new Partita(socket.id, avversario)    // Creiamo subito una nuova partita con questi due avversari
           partite.push(tmp)
-          console.log(JSON.stringify(partite))
-          //console.log({tmp})
           console.log("\nSocket.id: " + socket.id + " Type: " + typeof(socket.id))
           console.log("\nSocketAvversario: " + avversario + " Type: " + typeof(avversario))
           console.log(tmp.getMazzo().getMano())
-
-          // TODO: capire se togliere sta roba
-          try{
-            console.log("BRISCOLA ESTRATTA: ". JSON.stringify(tmp.getBriscolaEstratta()))
-          }catch(err){
-            console.log("Non funziona")
-          }
-
 
           io.to(socket.id).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))
           io.to(avversario).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))          
@@ -165,7 +151,6 @@ io.on("connection", (socket) =>{
           io.to(partite[i].getAvversario(socket.id)).emit("cartaGiocataAvversario", cartaGiocata.ImagePath, 2)       // per aggiornamento grafica
          
           // Calcola vincitore
-          console.log("DOPO SEND")
           var primaCartaGiocata = partite[i].getCartaInTavola()
           var secondaCartaGiocata = tmpCarta
           var idVincitoreMano = "";
@@ -182,19 +167,15 @@ io.on("connection", (socket) =>{
                   idVincitoreMano = socket.id
                 }
               }else if (primaCartaGiocata.getValore() > secondaCartaGiocata.getValore()) {
-                console.log("MANO: entrambe briscole, vince la prima perchè di valore maggiore")
                 idVincitoreMano = partite[i].getAvversario(socket.id)
               } else {
-                console.log("MANO: entrambe briscole, vince la seconda perchè di valore maggiore")
                 idVincitoreMano = socket.id
               }
             } else if (!primaCartaGiocata.getIsBriscola() && secondaCartaGiocata.getIsBriscola()) {
-              console.log("MANO: la seconda è briscola mentre la prima no, vince la seconda")
               // Solo la seconda è briscola, vince la seconda
               idVincitoreMano = socket.id
               //partite[i].setChiInizia(socket.id)
             } else if (primaCartaGiocata.getIsBriscola() && !secondaCartaGiocata.getIsBriscola()) {
-              console.log("MANO: la prima è briscola mentre la seconda no, vince la prima")
               // Solo la prima è briscola, vince la prima
               idVincitoreMano = partite[i].getAvversario(socket.id)
               //partite[i].setChiInizia(partite[i].getAvversario(socket.id))
@@ -203,16 +184,13 @@ io.on("connection", (socket) =>{
               if (primaCartaGiocata.getSeme() === secondaCartaGiocata.getSeme()){
                 // Vince quella di valore maggiore
                 if (primaCartaGiocata.getValore() > secondaCartaGiocata.getValore()){
-                  console.log("MANO: nessuna delle due è briscola, sono di seme uguale e la prima è maggiore, vince la prima")
                   idVincitoreMano = partite[i].getAvversario(socket.id)
                   //partite[i].setChiInizia(partite[i].getAvversario(socket.id))     // Il turno successivo è iniziato dall'avversario del giocatore nel metodo qua 
                 } else{
-                  console.log("MANO: nessuna delle due è briscola, sono di seme uguale e la seconda è maggiore, vince la seconda")
                   idVincitoreMano = socket.id
                   //partite[i].setChiInizia(socket.id)
                 }
               } else {
-                console.log("MANO: nessuna delle due è briscola, sono di seme diverso, vince la prima")
                 // Vince la prima giocata
                 idVincitoreMano = partite[i].getAvversario(socket.id)
                 //partite[i].setChiInizia(partite[i].getAvversario(socket.id))
@@ -260,11 +238,6 @@ io.on("connection", (socket) =>{
             io.to(socket.id).emit("fineMano", JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))
             io.to(partite[i].getAvversario(socket.id)).emit("fineMano",  JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))  
           }
-
-          
-          console.log("DOPO ULTIME SEND")
-          console.log(partite[i])
-
           // Svuota CartaInTavola
           partite[i].setCartaInTavola(null)
 

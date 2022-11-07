@@ -1,10 +1,30 @@
 const Carta = require('./carta.js');
 const Mazzo = require('./mazzo.js')
 
+function mischia(array) {
+var tmpSwitch;
+var randomIndex = 0;
+console.log("ARRAY PRIMA DEL CICLO " + JSON.parse(array) + " LUNGHEZZA: " + typeof(array))
+
+
+for (let i = 0; i < array.length; i++) {
+    tmpSwitch = array[i]
+    randomIndex = Math.floor(Math.random() * array.length)
+    console.log("array[",i,"]: ", array[i])
+    console.log("array[",randomIndex,"]: ", array[randomIndex])
+    array[i] = array[randomIndex]
+    array[randomIndex] = tmpSwitch
+    console.log("array[",i,"]: ", array[i])
+    console.log("array[",randomIndex,"]: ", array[randomIndex])
+}
+return array;
+}
+  
+
 class Partita{
     constructor(IdGiocatore1, IdGiocatore2){
         this.IdPartita = Math.floor(Math.random()*1000);
-        this.Mazzo = new Mazzo()
+        this.Mazzo = mischia(new Mazzo())
         this.CarteRimanenti = this.Mazzo.carteRimanenti();     // Numero carte rimanenti
         this.Punteggio1 = 0
         this.Punteggio2 = 0 
@@ -16,6 +36,8 @@ class Partita{
         
         this.BriscolaEstratta.setIsBriscola(true)
         this.Mazzo.impostaBriscola(this.BriscolaEstratta.getSeme())
+        //this.Mazzo = this.Mazzo.mischia()
+        //console.log("Mazzo nuovo", this.Mazzo)
     }
 
     // Ritorna il mazzo utilizzato per una partita
