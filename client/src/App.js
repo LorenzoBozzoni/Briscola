@@ -23,7 +23,9 @@ function App() {
       <Route path="selectGame" element={<InitialPage/>} />
       <Route path="selectGame/Partita" element={<GameField/>}  />
     </Routes>
-    <ToastContainer />
+    <div style={{height:"0px"}}>
+        <ToastContainer/>
+    </div>
   </>
   );
 }

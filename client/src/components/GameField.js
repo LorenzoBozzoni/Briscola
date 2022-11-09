@@ -4,6 +4,7 @@ import {socket} from "./LoginPage.js"
 import { notify } from '../App.js'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Dots, Waves, Spinner, TrinitySpinner, MinimalSpinner } from 'loading-animations-react';
 //import "./GameField.css";
 
 const cartaCoperta = require('../Images/Retro.jpg');
@@ -28,7 +29,9 @@ export class GameField extends Component {
     punteggioMio : 0,
     punteggioAvversario : 1,          // sbagliato apposta per vedere se setState corregge TODO: ripristinare a 0
     idPartita : 0,
-    messaggioAlert : "Ciao"
+    messaggioAlert : "Ciao",
+    visibilityMazzo : "hidden",
+    visibilityField : "hidden"
   };
     
   
@@ -75,6 +78,10 @@ export class GameField extends Component {
       // mano e partita vengono mandate come stringhe, vanno sistemate per formato corretto e poi convertite 
       var manoJSON = JSON.parse(mano.substring(mano.indexOf("{")))              // , mano.lastIndexOf("}")
       var partitaJSON = JSON.parse(partita.substring(partita.indexOf("{")))     // , partita.lastIndexOf("}")
+
+      // Rendiamo il campo visibile
+      this.setState({visibilityField:"visible", visibilityMazzo: "visible"})
+
 
       // Settiamo la mano iniziale
       this.setState({primaCartaMia: JSON.stringify(manoJSON.PrimaCarta)})
@@ -161,20 +168,33 @@ export class GameField extends Component {
     socket.off("cartaGiocataAvversario").on("cartaGiocataAvversario", (imagePath, numero) => {
       //notify("L'avversario ha giocato una carta in tavola")
       // si può rimuovere graficamente carta a caso 
-      switch (this.randomNumberInRange(1,3)) {
-        case 1:
-          this.setState({primaCartaAvversario:""})
-          break;
-        case 2:
-          this.setState({secondaCartaAvversario:""})
-          break;
-        case 3:
-          this.setState({terzaCartaAvversario:""})
-          break;
-        default:
-          notify("Carta giocata avversario, case default")
-          break;
-      }
+      var found = false
+
+      while(!found){
+        switch (this.randomNumberInRange(1,3)) {
+          case 1:
+            if (this.state.primaCartaAvversario !== ""){
+              found = true
+            }
+            this.setState({primaCartaAvversario:""})
+            break;
+          case 2:
+            if (this.state.secondaCartaAvversario !== ""){
+              found = true
+            }
+            this.setState({secondaCartaAvversario:""})
+            break;
+          case 3:
+            if (this.state.terzaCartaAvversario !== ""){
+              found = true
+            }
+            this.setState({terzaCartaAvversario:""})
+            break;
+          default:
+            notify("Carta giocata avversario, case default")
+            break;
+        }
+    }
 
       // visualizzazione in tavola della carta giocata
       const numeroCarta = imagePath.substring(imagePath.lastIndexOf("/")+1,imagePath.lastIndexOf("."))        // TODO: funzione?
@@ -210,11 +230,9 @@ export class GameField extends Component {
       var str = "Carte rimanenti "+ partitaJSON.CarteRimanenti + " tipo: " + typeof(partitaJSON.CarteRimanenti)
       notify(str)
 
-      if (partitaJSON.CarteRimanenti === 1){
+      if (partitaJSON.CarteRimanenti === 0){
         this.setState({immBriscolaEstratta:""})
-      } else if (partitaJSON.CarteRimanenti === 0){
-        document.getElementById("Mazzo").setAttribute("visibility","hidden")
-
+        this.setState({visibilityMazzo:"hidden"})
       } 
       
       this.setState({
@@ -263,8 +281,14 @@ export class GameField extends Component {
 
     })
 
-    socket.off("finePartita").on("finePartita", () => {
+    socket.off("finePartita").on("finePartita", (vincitore) => {
+      // Rimuoviamo le ultime carte giocate dalla tavola
+      this.setState({primaCartaTavola:""})
+      this.setState({secondaCartaTavola:""})
+
       notify("La partita è finita")
+      (socket.id === vincitore)? notify("Hai vinto!") : notify("Hai perso!")
+      window.PopStateEvent()
     })
 
     socket.off("disconnessioneAvversario").on("disconnessioneAvversario", () => {
@@ -282,12 +306,20 @@ export class GameField extends Component {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
   
-  
+  /*
+  <Dots text="Aspettando l'avversario casuale..." />
+      <Spinner color1="blue" color2="#fff" textColor="rgba(0,0,0, 0.5)" />
+      <Waves waveColor="cyan" backgroundColor="#000" />
+      <TrinitySpinner color="blue" />
+ */
   render() { 
     return (
       <>
-      <div className="container text-center bg-success">   
-          
+      <div style={{"height":"30%", "width":"30%", "margin":"40%", "visibility":(this.state.visibilityField === "hidden")? "visible" : "hidden"}} > 
+        <MinimalSpinner color="green" text="Aspettando l'avversario casuale"/>
+      </div>
+      <div className="BiggerContainer">
+      <div className="container bg-success" style={{visibility:this.state.visibilityField, position:"fixed", top:0, right:0, width:"100vw", height:"100vh"}}>   
       <div className="row">
         <div className="col-sm" id="SecondPlayerFirstCard" onClick={this.handleClick}>
           <img className="rounded-4" src={this.state.primaCartaAvversario} alt=""></img>
@@ -303,7 +335,7 @@ export class GameField extends Component {
         </div>
       </div>
       <div className="row">
-        <div className="col-sm"><img className="rounded-4" src={cartaCoperta} id="Mazzo" style={{float: "left"}}></img></div>     
+        <div className="col-sm"><img className="rounded-4" src={cartaCoperta} id="Mazzo" style={{float: "left", visibility: this.state.visibilityMazzo}}></img></div>     
         <div className="col-sm"><img className="rounded-4" src={this.state.immBriscolaEstratta} style={{float: "left",transform: "rotate(90deg)"}}></img></div>      
         <div className="col-sm"><img className="rounded-4" src={this.state.primaCartaTavola} alt=""></img></div>
         <div className="col-sm"><img className="rounded-4" src={this.state.secondaCartaTavola} alt=""></img></div>
@@ -323,7 +355,10 @@ export class GameField extends Component {
         </div>
       </div>
       </div>
-      <ToastContainer />
+      <div style={{height:"0px"}}>
+        <ToastContainer/>
+    </div>
+    </div>
     </>
     )
   }

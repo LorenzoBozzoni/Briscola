@@ -113,8 +113,9 @@ export class LoginPage extends Component {
                     </div>
                 </div>
             </div>
-
-            <ToastContainer />
+            <div style={{height:"0px"}}>
+         <ToastContainer/>
+         </div>
         </>
       )
   }

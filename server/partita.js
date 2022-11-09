@@ -4,8 +4,9 @@ const Mazzo = require('./mazzo.js')
 function mischia(array) {
 var tmpSwitch;
 var randomIndex = 0;
-console.log("ARRAY PRIMA DEL CICLO " + JSON.parse(array) + " LUNGHEZZA: " + typeof(array))
 
+//console.log("ARRAY PRIMA DEL CICLO " + JSON.parse(array) + " LUNGHEZZA: " + typeof(array))
+console.log("ARRAY PRIMA DEL CICLO: " + array)
 
 for (let i = 0; i < array.length; i++) {
     tmpSwitch = array[i]
@@ -33,6 +34,7 @@ class Partita{
         this.ChiInizia = IdGiocatore1
         this.CartaInTavola = null;    
         this.BriscolaEstratta = this.Mazzo.pop()
+        this.ManiFinali = 3
         
         this.BriscolaEstratta.setIsBriscola(true)
         this.Mazzo.impostaBriscola(this.BriscolaEstratta.getSeme())
@@ -124,6 +126,14 @@ class Partita{
         }else{
             return {};
         }
+    }
+    
+    getManiFinali(){
+        return this.ManiFinali;
+    }
+
+    decrementManiFinali() {
+        this.ManiFinali -= 1;
     }
 
     

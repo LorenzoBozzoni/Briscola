@@ -111,7 +111,6 @@ io.on("connection", (socket) =>{
           partite.push(tmp)
           console.log("\nSocket.id: " + socket.id + " Type: " + typeof(socket.id))
           console.log("\nSocketAvversario: " + avversario + " Type: " + typeof(avversario))
-          console.log(tmp.getMazzo().getMano())
 
           io.to(socket.id).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))
           io.to(avversario).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))          
@@ -230,19 +229,31 @@ io.on("connection", (socket) =>{
             io.to(partite[i].getAvversario(socket.id)).emit("fineMano",  JSON.stringify(partite[i]), JSON.stringify(partite[i].getBriscolaEstratta()))  
           }else if (partite[i].getCarteRimanenti() === 0){
             // La partita è finita!
+            if (partite[i].getManiFinali() === 1){
+              var vincitore;
+              if (partite[i].getPunteggio1 > partite[i].getPunteggio2){
+                vincitore = partite[i].getGiocatore1
+              }else{
+                vincitore = partite[i].getGiocatore2
+              }
+              io.to(socket.id).emit("finePartita", vincitore)
+              io.to(partite[i].getAvversario(socket.id)).emit("finePartita", vincitore)
 
-
-            io.to(socket.id).emit("finePartita")
-            io.to(partite[i].getAvversario(socket.id)).emit("finePartita")  
+              // Gestione di fine partita
+              partite.splice(i, 1)   // Rimozione della partita dalla lista delle partite in corso
+              break
+            } else {
+              partite[i].decrementManiFinali()
+              io.to(socket.id).emit("fineMano", JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))
+              io.to(partite[i].getAvversario(socket.id)).emit("fineMano",  JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))  //TODO: sostituire con pop()
+            }
+              
           }else {
             io.to(socket.id).emit("fineMano", JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))
-            io.to(partite[i].getAvversario(socket.id)).emit("fineMano",  JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))  
+            io.to(partite[i].getAvversario(socket.id)).emit("fineMano",  JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))  //TODO: sostituire con pop()
           }
           // Svuota CartaInTavola
           partite[i].setCartaInTavola(null)
-
-          
-
           
         }else{
           io.to(socket.id).emit("cartaGiocataRes", false)
@@ -291,10 +302,11 @@ function uscita(id, disconnesso){
   console.log("user disconnected ", id);
 
   // Remove from waiting room if (in it) and disconnected
-  if(single.find(item => item === (id).toString())){
+  if(single.indexOf(item => item === (id).toString())){
     single.pop(id)
-  } else if(multi.find(item => item === (id).toString())){
+  } else if(multi.find(item => item === (id).toString)){
       multi.pop(id)
+      console.log("Fatto la pop di: ", id)
   } else if(single.find(item => item === (id).toString())){
     friend.pop(id)
   }
