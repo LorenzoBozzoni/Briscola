@@ -12,6 +12,7 @@ const { SocketAddress } = require("net");
 const { emit } = require("process");
 
 app.use(cors({origin: ["https://admin.socket.io/", "http://localhost:3000"]}));
+app.disable('etag');
 
 const dbURI = "mongodb+srv://lorebozzo:-4J2Rht4QYq6S!!@cluster0.3wfvfel.mongodb.net/?retryWrites=true&w=majority"
 const mongoClient = new MongoClient(dbURI);
@@ -80,14 +81,20 @@ io.on("connection", (socket) =>{
         console.log("LOGIN FALSE")   
       }
     }
-    socket.emit("accessOutcome", outcome)   // TODO: mettere io.to() ?
+    socket.emit("accessOutcome", outcome, email)   // TODO: mettere io.to() ?
   })
 
   // SELEZIONE TIPO DI PARTITA CHE SI VUOLE FARE
-  socket.on("gameTypeSelected", (mode) => {
+  socket.on("gameTypeSelected", (mode, avversario) => {
     switch (mode) {
       case "friend": {
         friend.push(socket.id); 
+        var idAvversario = getIdFromUser(users,avversario)
+        if (idAvversario !== null){
+          io.to(idAvversario).emit("RichiestaInizioPartita", getUserFromId(users,socket.id))     // Mandiamo la richiesta all'amico
+        }
+        console.log("Dopo if invio evento amico")
+
         break;
       }
       case "single": {
@@ -117,9 +124,34 @@ io.on("connection", (socket) =>{
         }
         break;
       }
-      default: socket.to(socket.id).emit("error")
+      default: io.to(socket.id).emit("error")
     }
   })  
+
+
+  socket.on("RispostaPartitaAmico", (risposta, userAmico) => {
+    
+    var idAmico = getIdFromUser(users, userAmico)
+    if (idAmico !== null){
+      if (risposta === "si"){
+        // La partita può iniziare
+        
+        var tmp = new Partita(socket.id,idAmico)    // Creiamo subito una nuova partita con questi due avversari
+        partite.push(tmp)
+        console.log("\nSocket.id: " + socket.id + " Type: " + typeof(socket.id))
+        //console.log("\nSocketAvversario: " + avversario + " Type: " + typeof(avversario))
+  
+        io.to(socket.id).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))
+        io.to(idAmico).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))
+      }else{
+        // Si comunica all'amico che non vuole giocare
+        io.to(idAmico).emit("richiestaAmicoRifiutata")
+      }
+    }else{
+      console.log("IdAmico non trovato")
+    }
+
+  })
 
   socket.on("cartaGiocataReq", (idPartita, cartaGiocata) => {
     // carta giocata è una stringa contentente un json. Deve essere convertita con JSON.parse per poter accedere alle sue proprietà
@@ -232,9 +264,9 @@ io.on("connection", (socket) =>{
             if (partite[i].getManiFinali() === 1){
               var vincitore;
               if (partite[i].getPunteggio1 > partite[i].getPunteggio2){
-                vincitore = partite[i].getGiocatore1
+                vincitore = partite[i].getGiocatore1()
               }else{
-                vincitore = partite[i].getGiocatore2
+                vincitore = partite[i].getGiocatore2()
               }
               io.to(socket.id).emit("finePartita", vincitore)
               io.to(partite[i].getAvversario(socket.id)).emit("finePartita", vincitore)
@@ -265,7 +297,14 @@ io.on("connection", (socket) =>{
     }
   })
 
-
+  socket.on("AggiornaID",(username) => {
+    console.log("Id di " + username + " aggiornato")
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].user === username){
+        users[i].id = socket.id
+      } 
+    }
+  })
 
 
   // PER LA DISCONNESSIONE
@@ -281,10 +320,19 @@ io.on("connection", (socket) =>{
 })
 
 
-app.get('/ciao', (req, res) => {
-  res.json({"miao":2})
+app.get('/RegoleBriscola', (req, res) => {
+  console.log("Richiesta arrivata --> " , req)
+  //res.send("Salve")
+  res.download("../RegoleBriscola.txt")
+  //res.location("http://localhost:3001/selectGame/partita")
 })
 
+app.get('/StoriaBriscola', (req, res) => {
+  console.log("Richiesta arrivata --> " , req)
+  //res.send("Salve")
+  res.download("../StoriaBriscola.txt")
+  //res.location("http://localhost:3001/selectGame/partita")
+})
 
 
 server.listen(3001, () => {
@@ -336,4 +384,24 @@ function uscita(id, disconnesso){
   socket.removeAllListeners('disconnect');
   io.removeAllListeners('connection');
   */
+}
+
+// Cerca nell'array users (TODO: non passare come parametro l'array) l'id e ritorna lo username associato
+function getUserFromId(array, id){
+  for (let index = 0; index < array.length; index++) {
+    if (array[index].id === id){
+      return array[index].user
+    }
+  }
+  return null
+}
+
+// Vicecersa del precedente
+function getIdFromUser(array, user){
+  for (let index = 0; index < array.length; index++) {
+    if (array[index].user === user){
+      return array[index].id
+    }
+  }
+  return null
 }

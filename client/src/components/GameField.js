@@ -8,7 +8,7 @@ import { Dots, Waves, Spinner, TrinitySpinner, MinimalSpinner } from 'loading-an
 //import "./GameField.css";
 
 const cartaCoperta = require('../Images/Retro.jpg');
-
+const username = window.localStorage.getItem("User")
 
 
 export class GameField extends Component {
@@ -124,6 +124,7 @@ export class GameField extends Component {
         if (this.state.idPartita !== 0){
           notify("La partita verrà conclusa")
         }
+        socket.emit("AggiornaID", username)
         socket.emit("abbandonaPartita")
       });
     })
@@ -277,9 +278,13 @@ export class GameField extends Component {
         })
       } 
     }
-      
 
     })
+
+    socket.off("richiestaAmicoRifiutata", () => {
+      notify("Il tuo amico ha rifiutato la richiesta")
+    })
+
 
     socket.off("finePartita").on("finePartita", (vincitore) => {
       // Rimuoviamo le ultime carte giocate dalla tavola
@@ -287,8 +292,11 @@ export class GameField extends Component {
       this.setState({secondaCartaTavola:""})
 
       notify("La partita è finita")
+      notify("tipo vincitore" + typeof(vincitore))
+      notify("tipo socket.id" + typeof(socket.id))
       (socket.id === vincitore)? notify("Hai vinto!") : notify("Hai perso!")
       window.PopStateEvent()
+      
     })
 
     socket.off("disconnessioneAvversario").on("disconnessioneAvversario", () => {
@@ -301,17 +309,14 @@ export class GameField extends Component {
   }
 
 
+
+
   randomNumberInRange(min, max) {
     // 👇️ get number between min (inclusive) and max (inclusive)
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
   
-  /*
-  <Dots text="Aspettando l'avversario casuale..." />
-      <Spinner color1="blue" color2="#fff" textColor="rgba(0,0,0, 0.5)" />
-      <Waves waveColor="cyan" backgroundColor="#000" />
-      <TrinitySpinner color="blue" />
- */
+
   render() { 
     return (
       <>

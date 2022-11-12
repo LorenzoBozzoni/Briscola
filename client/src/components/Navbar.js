@@ -1,22 +1,25 @@
 import React, {Component} from 'react'
 import 'bootstrap/dist/css/bootstrap.css';
+import { notify } from '../App.js';
 
 export class Navbar extends Component {
-  async pageRequest(){
-    const response = await fetch("/ciao", {
-      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+  state = {
+    id:this.props.PlayerId
+  }
+
+  async pageRequest(page){
+    var response = await fetch(page, {
+      method: 'GET', // *GET, POST, PUT, DELETE, etc.
       mode: 'cors', // no-cors, *cors, same-origin
       cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
       credentials: 'same-origin', // include, *same-origin, omit
       headers: {
         'Content-Type': 'application/json'
-        // 'Content-Type': 'application/x-www-form-urlencoded',
       },
-      //redirect: 'follow', // manual, *follow, error
-      //referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-      //body: JSON.stringify(data) // body data type must match "Content-Type" header
     });
-    window.alert(JSON.stringify(response))
+
+    const text = await response.text()
+    window.alert(text)
   }
 
 
@@ -32,11 +35,28 @@ export class Navbar extends Component {
       <div className="collapse navbar-collapse" id="navbarScroll">
         <ul className="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" >
           <li className="nav-item">
-            <a className="nav-link active" aria-current="page" href="#" onClick={() => {this.pageRequest()}}>Home</a>
+            <a className="nav-link active" aria-current="page" href="#" onClick={() => {this.pageRequest("/StoriaBriscola")}}>Storia del gioco</a>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="#">Link</a>
+            <a className="nav-link active" aria-current="page" href="#" onClick={() => {this.pageRequest("/RegoleBriscola")}}>Regole</a>
           </li>
+
+          <li className="nav-item">
+            <a className="nav-link" style={{float:"right"}}>Il tuo username è: {this.props.PlayerId}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  </>
+    )
+  }
+}
+
+
+
+/*
+
           <li className="nav-item dropdown">
             <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Link
@@ -48,18 +68,4 @@ export class Navbar extends Component {
               <li><a className="dropdown-item" href="#">Something else here</a></li>
             </ul>
           </li>
-          <li className="nav-item">
-            <a className="nav-link disabled">Link</a>
-          </li>
-        </ul>
-        <form className="d-flex" role="search">
-          <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"></input>
-          <button className="btn btn-outline-success" type="submit">Search</button>
-        </form>
-      </div>
-    </div>
-  </nav>
-  </>
-    )
-  }
-}
+*/

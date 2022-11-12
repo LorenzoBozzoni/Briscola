@@ -6,16 +6,49 @@ import { ToastContainer, toast } from 'react-toastify';
 import {Navbar} from './Navbar.js'
 import 'react-toastify/dist/ReactToastify.css';
 
-
+const id = socket.id
 const singolo = require("../Images/Singolo.jpg")
 const multi = require("../Images/ConAvversari.jpg")
 const friend = require("../Images/ConAvversario1.jpg")
 
+const username = window.localStorage.getItem("User")
 
 export class InitialPage extends Component {
   state = {
-    visibilitySpinner: "hidden"
+    visibilitySpinner: "hidden",
   }
+
+ 
+
+  componentDidMount(){
+    notify(socket.id)
+    socket.emit("AggiornaID", username)
+    //notify("mounting component " + window.localStorage.getItem("IdSocket"))
+    /*
+    notify("mounting component " + window.localStorage.getItem("SocketId"))
+
+    const playerSocketId = socket.id
+    this.setState({playerId:playerSocketId})
+    */
+   //notify(window.localStorage.getItem("User"))
+   //this.setState({user:})
+    /*
+    window.addEventListener("beforeunload", (event) => {
+      window.localStorage.setItem("User",this.state.playerId)
+    })
+    */
+
+    socket.off("RichiestaInizioPartita").on("RichiestaInizioPartita", (userAmico) => {
+      notify("Evento partita amico arrivato")
+      var risposta = window.prompt(userAmico + " ti sta invitando per una partita, accetti? (si/no)")
+      notify(risposta)
+      if (risposta.toLowerCase() === "si"){
+        socket.emit("RispostaPartitaAmico", risposta, userAmico)
+        document.location.href = document.location + "/partita"; 
+      }
+    })
+  }
+  
 
   switchSpinnerState(){
     if (this.state.visibilitySpinner === "hidden")
@@ -25,7 +58,18 @@ export class InitialPage extends Component {
   } 
 
   gameTypeSelected(modalità){
-    socket.emit('gameTypeSelected', modalità);
+    if (modalità !== "friend"){
+       socket.emit('gameTypeSelected', modalità, null);
+    }else{
+      var friend = window.prompt("Inserisci l'username dell'avversario")
+      if (friend.trim() === "" || friend === null){
+        notify("Username inserito non valido")
+      }else{
+        socket.emit('gameTypeSelected', modalità, friend);
+      }
+      
+    }
+    
     this.setState({visibilitySpinner:"visible"})
     // Nell'attesa della risposta (evento socket partitaIniziata) si potrebbe rendere visibile il simbolo di attesa
     //await fetch("./Partita")
@@ -34,10 +78,10 @@ export class InitialPage extends Component {
   render (){
     return(
     <>
-    <Navbar>    
+    <Navbar PlayerId={username}>    
 
     </Navbar>
-    <div className="d-grid gap-2 mx-auto">
+    <div className="d-grid gap-2 mx-auto" style={{"height":"95vh"}}>
       <Link to="./partita" className="btn btn-primary" id="SingleGameButton" onClick={() => this.gameTypeSelected("single")}>
         <p className='gameTypeLabel'>SINGLE PLAYER</p>
       </Link>

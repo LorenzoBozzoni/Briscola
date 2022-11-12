@@ -59,14 +59,16 @@ export class LoginPage extends Component {
           socket.emit('access', accessType, email, password); 
         }
     
-        socket.off("accessOutcome").on('accessOutcome', (accessOutcome) => {
+        socket.off("accessOutcome").on('accessOutcome', (accessOutcome, user) => {
             this.setState({visibilitySpinner:"hidden"})  // switch
             if (!accessOutcome) {
             //document.getElementById("").setAttribute()
             notify("Autenticazione fallita");
             } else {
-            document.location.href = document.location + "selectGame"; // ci si sposta nella pagina per selezionare il tipo di partita
-            notify("Autenticazione riuscita");
+              notify("Autenticazione riuscita ");
+              window.localStorage.setItem("User",user)
+              document.location.href = document.location + "selectGame"; // ci si sposta nella pagina per selezionare il tipo di partita
+              
             }
         })
     }
