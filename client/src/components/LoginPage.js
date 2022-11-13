@@ -23,6 +23,7 @@ export const socket = io('http://localhost:3001',
 
 export class LoginPage extends Component {
   state = {
+    height: "0px",
     visibilityTextBox: "hidden",
     visibilitySpinner: "hidden",
     access: "login"
@@ -73,11 +74,15 @@ export class LoginPage extends Component {
         })
     }
     switchAccess(){
-        if (this.state.visibilityTextBox === "hidden")
-            this.setState({visibilityTextBox:"visible", access:"signup"})
-        else            
-            this.setState({visibilityTextBox:"hidden", access:"login"})   
-
+        if (this.state.visibilityTextBox === "hidden"){
+          this.setState({visibilityTextBox:"visible", access:"signup"})
+          this.setState({height:"auto"})
+        }
+        else{
+          this.setState({visibilityTextBox:"hidden", access:"login"})
+          this.setState({height:"0px"})
+        }
+            
     }
   render(){
     return (
@@ -99,7 +104,7 @@ export class LoginPage extends Component {
                         <label htmlFor="InputPassword1" className="form-label">Password</label>
                         <input type="password" className="form-control" id="InputPassword1"></input>
                     </div>
-                    <div className="mb-3" style={{visibility:this.state.visibilityTextBox}} id="hiddenTxtPassword">
+                    <div className="mb-3" style={{visibility:this.state.visibilityTextBox, height:this.state.height}} id="hiddenTxtPassword">
                         <label htmlFor="InputPassword2" className="form-label">Write password again</label>
                         <input type="password" className="form-control" id="InputPassword2"></input>
                     </div>

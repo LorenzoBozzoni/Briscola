@@ -35,12 +35,13 @@ export class Navbar extends Component {
       <div className="collapse navbar-collapse" id="navbarScroll">
         <ul className="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" >
           <li className="nav-item">
-            <a className="nav-link active" aria-current="page" href="#" onClick={() => {this.pageRequest("/StoriaBriscola")}}>Storia del gioco</a>
+            <a className="nav-link active" aria-current="page" target="_blank" href="https://it.wikipedia.org/wiki/Briscola#Origine_ed_etimologia" //onClick={() => {this.pageRequest("/StoriaBriscola")}}
+            >Storia del gioco</a>
           </li>
           <li className="nav-item">
-            <a className="nav-link active" aria-current="page" href="#" onClick={() => {this.pageRequest("/RegoleBriscola")}}>Regole</a>
+            <a className="nav-link active" aria-current="page" target="_blank" href="https://it.wikipedia.org/wiki/Briscola#Regole" //onClick={() => {this.pageRequest("/RegoleBriscola")}}
+            >Regole</a>
           </li>
-
           <li className="nav-item">
             <a className="nav-link" style={{float:"right"}}>Il tuo username è: {this.props.PlayerId}</a>
           </li>
