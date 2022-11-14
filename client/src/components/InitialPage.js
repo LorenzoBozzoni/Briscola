@@ -5,23 +5,28 @@ import { notify } from '../App.js'
 import { ToastContainer, toast } from 'react-toastify';
 import {Navbar} from './Navbar.js'
 import 'react-toastify/dist/ReactToastify.css';
+import { ReactSession } from 'react-client-session';
 
 const id = socket.id
 const singolo = require("../Images/Singolo.jpg")
 const multi = require("../Images/ConAvversari.jpg")
 const friend = require("../Images/ConAvversario1.jpg")
 
-const username = window.localStorage.getItem("User")
 
 export class InitialPage extends Component {
   state = {
     visibilitySpinner: "hidden",
+    username :""
   }
 
- 
-
   componentDidMount(){
-    notify(socket.id)
+    const username = ReactSession.get("User");
+    
+    this.setState({username:username})
+    if (username === undefined){
+      notify("non hai fatto il login")
+      document.location.href = "/"; 
+    }
     socket.emit("AggiornaID", username)
     //notify("mounting component " + window.localStorage.getItem("IdSocket"))
     /*
@@ -78,7 +83,7 @@ export class InitialPage extends Component {
   render (){
     return(
     <>
-    <Navbar PlayerId={username}>    
+    <Navbar PlayerId={this.state.username}>    
 
     </Navbar>
     <div className="d-grid gap-2 mx-auto" style={{"height":"95vh"}}>
