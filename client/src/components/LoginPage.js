@@ -4,6 +4,7 @@ import { io } from 'socket.io-client'
 import { notify } from '../App.js'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ReactSession } from 'react-client-session';
 
 //import Spinner from "./Spinner.js"
 /*
@@ -67,9 +68,8 @@ export class LoginPage extends Component {
             notify("Autenticazione fallita");
             } else {
               notify("Autenticazione riuscita ");
-              window.localStorage.setItem("User",user)
+              ReactSession.set("User",user)
               document.location.href = document.location + "selectGame"; // ci si sposta nella pagina per selezionare il tipo di partita
-              
             }
         })
     }

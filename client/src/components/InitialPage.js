@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import {socket} from '../components/LoginPage.js'
 import { notify } from '../App.js'
 import { ToastContainer, toast } from 'react-toastify';
@@ -28,28 +28,18 @@ export class InitialPage extends Component {
       document.location.href = "/"; 
     }
     socket.emit("AggiornaID", username)
-    //notify("mounting component " + window.localStorage.getItem("IdSocket"))
-    /*
-    notify("mounting component " + window.localStorage.getItem("SocketId"))
-
-    const playerSocketId = socket.id
-    this.setState({playerId:playerSocketId})
-    */
-   //notify(window.localStorage.getItem("User"))
-   //this.setState({user:})
-    /*
-    window.addEventListener("beforeunload", (event) => {
-      window.localStorage.setItem("User",this.state.playerId)
-    })
-    */
 
     socket.off("RichiestaInizioPartita").on("RichiestaInizioPartita", (userAmico) => {
       notify("Evento partita amico arrivato")
       var risposta = window.prompt(userAmico + " ti sta invitando per una partita, accetti? (si/no)")
       notify(risposta)
       if (risposta.toLowerCase() === "si"){
+        //socket.emit("AggiornaID", username)
         socket.emit("RispostaPartitaAmico", risposta, userAmico)
-        document.location.href = document.location + "/partita"; 
+        //const navigate = useHook()
+        this.props.navigate("/selectGame/partita")
+        //document.location.href = document.location + "/partita"; 
+        window.alert("bloccante")
       }
     })
   }
@@ -105,10 +95,19 @@ export class InitialPage extends Component {
     </>
   )}
 }
+
+export function InitialPageWithRoute(props) {
+  const navigate = useNavigate()
+  return (<InitialPage navigate={navigate}></InitialPage>)
+}
+
+
 //<Link to="./partita">Single Player</Link>
 
 
 /*
+
+
       <div className="spinner-border text-primary" role="status" id="spinner" style={{visibility:this.state.visibilitySpinner}}>
         <span className="visually-hidden"  style={{visibility:this.state.visibilitySpinner}}>Loading...</span>
     </div>

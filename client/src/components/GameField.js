@@ -5,10 +5,12 @@ import { notify } from '../App.js'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Dots, Waves, Spinner, TrinitySpinner, MinimalSpinner } from 'loading-animations-react';
+import { ReactSession } from 'react-client-session';
+
 //import "./GameField.css";
 
 const cartaCoperta = require('../Images/Retro.jpg');
-const username = window.localStorage.getItem("User")
+
 
 
 export class GameField extends Component {
@@ -73,6 +75,11 @@ export class GameField extends Component {
   //useEffect(){
   //listener(){
   componentDidMount() {
+    const username = ReactSession.get("User");
+    if (username === undefined){
+      notify("non hai fatto il login")
+      document.location.href = "/"; 
+    }
     socket.off("partitaIniziata").on("partitaIniziata", (partita, mano, briscolaEstrattaParam) => {
       notify("PARTITA INIZIATA, MIOID: "+ socket.id)
       // mano e partita vengono mandate come stringhe, vanno sistemate per formato corretto e poi convertite 

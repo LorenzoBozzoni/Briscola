@@ -4,14 +4,15 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
 import {Navbar} from './components/Navbar.js';
 import {GameField} from './components/GameField.js'
-import {InitialPage}  from './components/InitialPage.js';
+import {InitialPage, InitialPageWithRoute}  from './components/InitialPage.js';
 import {LoginPage}  from './components/LoginPage.js';
 import {Routes, Route} from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ReactSession } from 'react-client-session';
 
 // Dettagli transport non so se sono corretti, sono per l'admin panel teoricamente ma non va
-
+ReactSession.setStoreType("sessionStorage");
 export const notify = (message) => toast(message);
 
 function App() {
@@ -20,7 +21,7 @@ function App() {
     <>
     <Routes> 
       <Route path="/" element={<LoginPage/>} />
-      <Route path="selectGame" element={<InitialPage/>} />
+      <Route path="selectGame" element={<InitialPageWithRoute/>} />
       <Route path="selectGame/Partita" element={<GameField/>}  />
     </Routes>
     <div style={{height:"0px"}}>

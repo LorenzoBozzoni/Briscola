@@ -90,7 +90,7 @@ io.on("connection", (socket) =>{
       case "friend": {
         friend.push(socket.id); 
         var idAvversario = getIdFromUser(users,avversario)
-        if (idAvversario !== null){
+        if (idAvversario !== null && idAvversario !== socket.id){
           io.to(idAvversario).emit("RichiestaInizioPartita", getUserFromId(users,socket.id))     // Mandiamo la richiesta all'amico
         }
         console.log("Dopo if invio evento amico")
@@ -114,13 +114,15 @@ io.on("connection", (socket) =>{
           
           // La partita può iniziare tra il giocatore che ha appena fatto richiesta e quello che nella waiting room aspetta da più tempo
           var avversario = multi.reverse().pop()          // Id dell'avversario
+          if (socket.id !== avversario) {
           var tmp = new Partita(socket.id, avversario)    // Creiamo subito una nuova partita con questi due avversari
-          partite.push(tmp)
-          console.log("\nSocket.id: " + socket.id + " Type: " + typeof(socket.id))
-          console.log("\nSocketAvversario: " + avversario + " Type: " + typeof(avversario))
+            partite.push(tmp)
+            console.log("\nSocket.id: " + socket.id + " Type: " + typeof(socket.id))
+            console.log("\nSocketAvversario: " + avversario + " Type: " + typeof(avversario))
 
-          io.to(socket.id).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))
-          io.to(avversario).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))          
+            io.to(socket.id).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))
+            io.to(avversario).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))       
+          }   
         }
         break;
       }
@@ -132,6 +134,7 @@ io.on("connection", (socket) =>{
   socket.on("RispostaPartitaAmico", (risposta, userAmico) => {
     
     var idAmico = getIdFromUser(users, userAmico)
+    console.log("idAmico: ", idAmico)
     if (idAmico !== null){
       if (risposta === "si"){
         // La partita può iniziare
@@ -298,12 +301,14 @@ io.on("connection", (socket) =>{
   })
 
   socket.on("AggiornaID",(username) => {
-    console.log("Id di " + username + " aggiornato")
     for (let i = 0; i < users.length; i++) {
       if (users[i].user === username){
         users[i].id = socket.id
       } 
     }
+    
+    console.log("Id di " + username + " aggiornato, nuovo id: " + socket.id)
+    console.log("Users: ", users)
   })
 
 
@@ -319,6 +324,9 @@ io.on("connection", (socket) =>{
   
 })
 
+app.get('/selectGame', (req,res) => {
+  console.log("Richiesta arrivata per selectGame")
+})
 
 app.get('/RegoleBriscola', (req, res) => {
   console.log("Richiesta arrivata --> " , req)
