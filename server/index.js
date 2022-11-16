@@ -11,18 +11,20 @@ const { instrument } = require("@socket.io/admin-ui");
 const { SocketAddress } = require("net");
 const { emit } = require("process");
 
+// Dichiarazione Cross-Origin-Resource-Sharing
 app.use(cors({origin: ["https://admin.socket.io/", "http://localhost:3000"]}));
 app.disable('etag');
 
+// Connection string per Mongodb Atlas database e connessione
 const dbURI = "mongodb+srv://lorebozzo:-4J2Rht4QYq6S!!@cluster0.3wfvfel.mongodb.net/?retryWrites=true&w=majority"
 const mongoClient = new MongoClient(dbURI);
-
 async function run() {
   await mongoClient.connect();
   console.log("Siamo connessi a MongoDB Atlas!");
 }
 run().catch(err => console.log("Errore connessione: " + err))
 
+// Creazione server HTTP
 const server = http.createServer(app);
 const io = new Server(server, {
     cors : {
@@ -42,23 +44,23 @@ var friend = [];
 // Partite che si stanno giocando
 var partite = [];
 
-// Utenti attivi
+// Utenti attivi con i rispettivi socket id
 var users = [];
 
-// Login outcome from database
+// Esito login dal database
 var outcome;
 
+// Selezione del database
 const db = mongoClient.db("Briscola");
 const collection = db.collection('Briscola');
 
 // APERTURA CONNESSIONE CON IL CLIENT
 io.on("connection", (socket) =>{
-  console.log(socket.id);
   outcome = false;
 
   // RICHIESTA CLIENT PER LOGIN/SIGNUP
   socket.on("access", async (accessMode, email, password) => {      // async qua per aspettare risultato query mongodb
-    console.log("accessMode: ",accessMode,"\nemail: ",email,"\npassword: ",password)
+    console.log("[info] Modalità di accesso: ",accessMode,"\nemail: ",email,"\npassword: ",password)
     if (accessMode === "signup"){
       const selectResult = await collection.findOne({user: email});
       const insertResult = collection.insertOne({user: email, password: password});      // tolto async --> AGGIUNGERE HASH!
@@ -74,11 +76,11 @@ io.on("connection", (socket) =>{
       console.log("selectResult: ", selectResult)
       if (selectResult != null){ 
         outcome = true; 
-        console.log("LOGIN TRUE")
+        console.log("[info] Esito login true")
         users.push({"user":email, "id":socket.id})
       } else { 
         outcome = false;
-        console.log("LOGIN FALSE")   
+        console.log("[info] Esito login falso")   
       }
     }
     socket.emit("accessOutcome", outcome, email)   // TODO: mettere io.to() ?
@@ -93,8 +95,6 @@ io.on("connection", (socket) =>{
         if (idAvversario !== null && idAvversario !== socket.id){
           io.to(idAvversario).emit("RichiestaInizioPartita", getUserFromId(users,socket.id))     // Mandiamo la richiesta all'amico
         }
-        console.log("Dopo if invio evento amico")
-
         break;
       }
       case "single": {
@@ -117,8 +117,6 @@ io.on("connection", (socket) =>{
           if (socket.id !== avversario) {
           var tmp = new Partita(socket.id, avversario)    // Creiamo subito una nuova partita con questi due avversari
             partite.push(tmp)
-            console.log("\nSocket.id: " + socket.id + " Type: " + typeof(socket.id))
-            console.log("\nSocketAvversario: " + avversario + " Type: " + typeof(avversario))
 
             io.to(socket.id).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))
             io.to(avversario).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))       
@@ -132,17 +130,12 @@ io.on("connection", (socket) =>{
 
 
   socket.on("RispostaPartitaAmico", (risposta, userAmico) => {
-    
     var idAmico = getIdFromUser(users, userAmico)
-    console.log("idAmico: ", idAmico)
     if (idAmico !== null){
       if (risposta === "si"){
         // La partita può iniziare
-        
         var tmp = new Partita(socket.id,idAmico)    // Creiamo subito una nuova partita con questi due avversari
         partite.push(tmp)
-        console.log("\nSocket.id: " + socket.id + " Type: " + typeof(socket.id))
-        //console.log("\nSocketAvversario: " + avversario + " Type: " + typeof(avversario))
   
         io.to(socket.id).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))
         io.to(idAmico).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))
@@ -151,7 +144,7 @@ io.on("connection", (socket) =>{
         io.to(idAmico).emit("richiestaAmicoRifiutata")
       }
     }else{
-      console.log("IdAmico non trovato")
+      console.log("[err] IdAmico non trovato")
     }
 
   })
@@ -163,24 +156,14 @@ io.on("connection", (socket) =>{
     // Scorri tutte le partite in corso 
     for (let i = 0; i < partite.length; i++) {
       if ((partite[i].getIdPartita()).toString() === idPartita){
-        console.log("Partita trovata")
         
         var tmpCarta = new Carta(cartaGiocata.Valore, cartaGiocata.Numero, cartaGiocata.Seme, cartaGiocata.IsBriscola, cartaGiocata.ImagePath)
-        //console.log("TMPCARTA: " + tmpCarta.getIsBriscola() + " " + tmpCarta.getImagePath() + " " + tmpCarta.getSeme() + " " + tmpCarta.getValore())
-
-        console.log("partite[i].getCartaInTavola() --> " + partite[i].getCartaInTavola() + " tipo --> " + typeof(partite[i].getCartaInTavola()))
-        console.log("idGiocatore (socket.id) --> " + socket.id + " tipo --> " + typeof(socket.id))
-        console.log("partite[i].getChiInizia() --> " + partite[i].getChiInizia() + " tipo --> " + typeof(partite[i].getChiInizia()))
 
         if (partite[i].getCartaInTavola() === null && socket.id === partite[i].getChiInizia()){         // Prima carta del turno
-          console.log("PRIMA CARTA IN TAVOLA GIOCATA")
           partite[i].setCartaInTavola(tmpCarta)
-          console.log("PARTITE["+i+"].getCartaInTavola --> ", partite[i].getCartaInTavola())
           io.to(socket.id).emit("cartaGiocataRes", true, JSON.stringify(cartaGiocata),1)          // esito richiesta carta giocata
           io.to(partite[i].getAvversario(socket.id)).emit("cartaGiocataAvversario", cartaGiocata.ImagePath,1)             // per aggiornamento grafica
-          console.log("Risposta richiesta carta giocata inviata")
         } else if (partite[i].getCartaInTavola() != null && socket.id != partite[i].getChiInizia()) {       // Seconda carta del turno
-          console.log("SECONDA CARTA IN TAVOLA GIOCATA")
           io.to(socket.id).emit("cartaGiocataRes", true, JSON.stringify(cartaGiocata),2)    // Stringify serve per fare ritornare come era quando passata come parametro
           io.to(partite[i].getAvversario(socket.id)).emit("cartaGiocataAvversario", cartaGiocata.ImagePath, 2)       // per aggiornamento grafica
          
@@ -188,8 +171,6 @@ io.on("connection", (socket) =>{
           var primaCartaGiocata = partite[i].getCartaInTavola()
           var secondaCartaGiocata = tmpCarta
           var idVincitoreMano = "";
-
-          console.log("VALORE ---------> ",primaCartaGiocata.getValore())
 
           try{
             if (primaCartaGiocata.getIsBriscola() && secondaCartaGiocata.getIsBriscola()){
@@ -231,18 +212,12 @@ io.on("connection", (socket) =>{
               }  
             }
           }catch(err){
-            console.log("ERRORE TRY CATCH: " + err)
-            console.log("Prima carta giocata: " + primaCartaGiocata)
-            console.log("Seconda carta giocata: " + secondaCartaGiocata)
+            console.log("[err] Errore try catch gestione mani, errore: " + err)
             io.to(socket.id).emit("cartaGiocataRes", false)
           }
-
-          console.log("DOPO CATCH")
-
           // Fare visualizzare la prima e la seconda carta giocata
 
           // Setta nuovo ChiGioca
-          console.log("idvincitoremano --> ",idVincitoreMano)
           partite[i].setChiInizia(idVincitoreMano)
           // Calcola punteggio
           if (partite[i].getIdGiocatore1() === idVincitoreMano){
@@ -251,15 +226,12 @@ io.on("connection", (socket) =>{
             partite[i].addToPunteggio2(primaCartaGiocata.getValore() + secondaCartaGiocata.getValore())
           }
 
-          //partite[i].updateNumeroManiRimanenti()
-          //console.log("Numero di carte rimanenti ---------------------------> ",partite[i].getMazzo().getCarteRimanenti())
           console.log("Numero di carte rimanenti ---------------------------> ",partite[i].getCarteRimanenti())
 
           // Ritorno messaggio e aggiornamento + carta pescata automaticamente per entrambi i giocatori (in ordine)
           if (partite[i].getCarteRimanenti() === 1){
             // Il secondo giocatore pesca la carta sotto
             var cartaRimanente = partite[i].pescaCarta()
-            console.log("Carta rimanente nel mazzo " + JSON.stringify(cartaRimanente))
             io.to(socket.id).emit("fineMano", JSON.stringify(partite[i]), JSON.stringify(cartaRimanente))
             io.to(partite[i].getAvversario(socket.id)).emit("fineMano",  JSON.stringify(partite[i]), JSON.stringify(partite[i].getBriscolaEstratta()))  
           }else if (partite[i].getCarteRimanenti() === 0){
@@ -295,74 +267,60 @@ io.on("connection", (socket) =>{
         }
 
       }else{
-        console.log("ERROR: IdPartita mismatch")
+        console.log("[err] Errore mismatch partita")
       }
     }
   })
 
+  // Metodo per aggiornare gli id delle socket dopo disconnessione temporanea utente
   socket.on("AggiornaID",(username) => {
     for (let i = 0; i < users.length; i++) {
       if (users[i].user === username){
         users[i].id = socket.id
       } 
     }
-    
-    console.log("Id di " + username + " aggiornato, nuovo id: " + socket.id)
-    console.log("Users: ", users)
+    console.log("[info] Id di " + username + " aggiornato, nuovo id: " + socket.id)
   })
 
 
-  // PER LA DISCONNESSIONE
-  // TODO: non funziona, sostituire socket.to() con io.to()
+  // In caso di chiusura della pagina 
   socket.on("disconnect", () =>{
     uscita(socket.id, true)
   })
 
+  // In caso di uscita dalla partita (tasto back)
   socket.on("abbandonaPartita", () => {
     uscita(socket.id, false)
   })
   
 })
 
-app.get('/selectGame', (req,res) => {
-  console.log("Richiesta arrivata per selectGame")
-})
-
+// Richiesta HTTP per visualizzare regole briscola 
 app.get('/RegoleBriscola', (req, res) => {
-  console.log("Richiesta arrivata --> " , req)
-  //res.send("Salve")
+  console.log("[info] Richiesta per regole del gioco arrivata")
   res.download("../RegoleBriscola.txt")
-  //res.location("http://localhost:3001/selectGame/partita")
 })
 
+// Richiesta HTTP per visualizzare la storia del gioco della briscola
 app.get('/StoriaBriscola', (req, res) => {
-  console.log("Richiesta arrivata --> " , req)
-  //res.send("Salve")
+  console.log("[info] Richiesta per storia gioco arrivata")
   res.download("../StoriaBriscola.txt")
-  //res.location("http://localhost:3001/selectGame/partita")
 })
-
 
 server.listen(3001, () => {
-    console.log("Server listening on port 3001...");
+    console.log("[info] Server listening on port 3001...");
 });
-
-
-// Serve per il pannello di controllo ma non riesco a implementarlo 
-// TODO: implementare pannello per controllo socket connesse al server
-instrument(io, {auth: false})
 
 
 // Disconnesso è un valore booleano che indica se il giocatore si è disconnesso (true) o ha soltanto abbandonato la partita (false)
 function uscita(id, disconnesso){
-  console.log("user disconnected ", id);
+  console.log("[info] Utente disconnesso: ", id);
 
   // Remove from waiting room if (in it) and disconnected
   if(single.indexOf(item => item === (id).toString())){
     single.pop(id)
   } else if(multi.find(item => item === (id).toString)){
       multi.pop(id)
-      console.log("Fatto la pop di: ", id)
   } else if(single.find(item => item === (id).toString())){
     friend.pop(id)
   }
@@ -383,7 +341,7 @@ function uscita(id, disconnesso){
     io.to(sendTo).emit("abbandonoAvversario")
   }
 
-  console.log("Evento disconnessione avversario inviato a -> " + sendTo)
+  console.log("[info] Evento disconnessione avversario inviato a -> " + sendTo)
 
 
   // Chiusura robe strane

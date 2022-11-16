@@ -1,24 +1,24 @@
 const Carta = require('./carta.js');
 const Mazzo = require('./mazzo.js')
 
+// Metodo per mischiare il mazzo usato in partita
 function mischia(array) {
-var tmpSwitch;
-var randomIndex = 0;
+    var tmpSwitch;
+    var randomIndex = 0;
 
-//console.log("ARRAY PRIMA DEL CICLO " + JSON.parse(array) + " LUNGHEZZA: " + typeof(array))
-console.log("ARRAY PRIMA DEL CICLO: " + array)
+    console.log("ARRAY PRIMA DEL CICLO: " + array)
 
-for (let i = 0; i < array.length; i++) {
-    tmpSwitch = array[i]
-    randomIndex = Math.floor(Math.random() * array.length)
-    console.log("array[",i,"]: ", array[i])
-    console.log("array[",randomIndex,"]: ", array[randomIndex])
-    array[i] = array[randomIndex]
-    array[randomIndex] = tmpSwitch
-    console.log("array[",i,"]: ", array[i])
-    console.log("array[",randomIndex,"]: ", array[randomIndex])
-}
-return array;
+    for (let i = 0; i < array.length; i++) {
+        tmpSwitch = array[i]
+        randomIndex = Math.floor(Math.random() * array.length)
+        console.log("array[",i,"]: ", array[i])
+        console.log("array[",randomIndex,"]: ", array[randomIndex])
+        array[i] = array[randomIndex]
+        array[randomIndex] = tmpSwitch
+        console.log("array[",i,"]: ", array[i])
+        console.log("array[",randomIndex,"]: ", array[randomIndex])
+    }
+    return array;
 }
   
 
@@ -38,8 +38,6 @@ class Partita{
         
         this.BriscolaEstratta.setIsBriscola(true)
         this.Mazzo.impostaBriscola(this.BriscolaEstratta.getSeme())
-        //this.Mazzo = this.Mazzo.mischia()
-        //console.log("Mazzo nuovo", this.Mazzo)
     }
 
     // Ritorna il mazzo utilizzato per una partita
@@ -47,6 +45,7 @@ class Partita{
         return this.Mazzo;
     }
 
+    // Numero carte rimanenti nel mazzo
     getCarteRimanenti(){
         this.CarteRimanenti = this.Mazzo.carteRimanenti()
         return this.Mazzo.carteRimanenti()
@@ -102,22 +101,27 @@ class Partita{
         this.ChiInizia = idGiocatore;
     }
 
+    // Ritorna il punteggio del giocatore1
     getPunteggio1() {
         return this.Punteggio1
     }
 
+    // Ritorna il punteggio del giocatore2
     getPunteggio2() {
         return this.Punteggio2
     }
 
+    // Per incrementare il punteggio del giocatore1
     addToPunteggio1(valore) {
         this.Punteggio1 += valore;
     }
 
+    // Per incrementare il punteggio del giocatore2
     addToPunteggio2(valore) {
         this.Punteggio2 += valore;
     }
 
+    // Per ottenere una carta dal mazzo
     pescaCarta(){
         var estratta = this.Mazzo.pop()
 
@@ -128,10 +132,12 @@ class Partita{
         }
     }
     
+    // Ritorna il numero di mani finali, partendo da 3
     getManiFinali(){
         return this.ManiFinali;
     }
 
+    // Decrementa di 1 il numero di mani finali, da 3 a 0, per capire quante mani finali (quelle senza mazzo) mancano
     decrementManiFinali() {
         this.ManiFinali -= 1;
     }

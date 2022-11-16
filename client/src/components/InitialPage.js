@@ -7,11 +7,6 @@ import {Navbar} from './Navbar.js'
 import 'react-toastify/dist/ReactToastify.css';
 import { ReactSession } from 'react-client-session';
 
-const id = socket.id
-const singolo = require("../Images/Singolo.jpg")
-const multi = require("../Images/ConAvversari.jpg")
-const friend = require("../Images/ConAvversario1.jpg")
-
 
 export class InitialPage extends Component {
   state = {
@@ -21,14 +16,18 @@ export class InitialPage extends Component {
 
   componentDidMount(){
     const username = ReactSession.get("User");
-    
     this.setState({username:username})
+    
+    // Se username è undefined vuol dire che non è stato fatto l'accesso, si viene reindirizzati alla home del sito
     if (username === undefined){
       notify("non hai fatto il login")
       document.location.href = "/"; 
     }
+
+    // Aggioranto ID associato allo user, necessario per tenere traccia del giocatore dopo disconnessione causata dal cambiamento di pagina
     socket.emit("AggiornaID", username)
 
+    // Evento di richiesta di partita da parte di un amico
     socket.off("RichiestaInizioPartita").on("RichiestaInizioPartita", (userAmico) => {
       notify("Evento partita amico arrivato")
       var risposta = window.prompt(userAmico + " ti sta invitando per una partita, accetti? (si/no)")
@@ -52,6 +51,7 @@ export class InitialPage extends Component {
         this.setState({visibilitySpinner:"hidden"}) 
   } 
 
+  // Funzione per emettere evento bottone per scelta tipologia di partita da giocare
   gameTypeSelected(modalità){
     if (modalità !== "friend"){
        socket.emit('gameTypeSelected', modalità, null);
@@ -65,15 +65,13 @@ export class InitialPage extends Component {
       
     }
     
-    this.setState({visibilitySpinner:"visible"})
-    // Nell'attesa della risposta (evento socket partitaIniziata) si potrebbe rendere visibile il simbolo di attesa
-    //await fetch("./Partita")
+    this.setState({visibilitySpinner:"visible"})   // TODO: rimuovere
   }
   
   render (){
     return(
     <>
-    <Navbar PlayerId={this.state.username}>    
+    <Navbar PlayerUsername={this.state.username}>    
 
     </Navbar>
     <div className="d-grid gap-2 mx-auto" style={{"height":"95vh"}}>
@@ -96,38 +94,9 @@ export class InitialPage extends Component {
   )}
 }
 
+// Functional component che incapsula il class component InitialPage per poter sfruttare useNavigate() di react-router-dom
 export function InitialPageWithRoute(props) {
   const navigate = useNavigate()
   return (<InitialPage navigate={navigate}></InitialPage>)
 }
-
-
-//<Link to="./partita">Single Player</Link>
-
-
-/*
-
-
-      <div className="spinner-border text-primary" role="status" id="spinner" style={{visibility:this.state.visibilitySpinner}}>
-        <span className="visually-hidden"  style={{visibility:this.state.visibilitySpinner}}>Loading...</span>
-    </div>
-
-
-
-<div className="d-grid gap-2 d-md-block">
-      <Link to="./partita">
-        <button className="btn btn-primary" type="button" onClick={() => this.gameTypeSelected("single")}>Single Player</button>
-      </Link>
-      <Link to="./partita">
-        <button className="btn btn-primary" type="button" onClick={() => this.gameTypeSelected("multi")}>Random multiplayer</button>
-      </Link>
-      
-        <button className="btn btn-primary" type="button" onClick={() => this.gameTypeSelected("friend")}>Play with a friend</button>
-    </div>
-
-
-Per centrare il testo dentro il button, non funziona
-
-    <p className="text-center">Random multiplayer</p> 
-*/
 

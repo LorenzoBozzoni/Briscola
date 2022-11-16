@@ -7,10 +7,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Dots, Waves, Spinner, TrinitySpinner, MinimalSpinner } from 'loading-animations-react';
 import { ReactSession } from 'react-client-session';
 
-//import "./GameField.css";
-
+// Immagine retro della carta 
 const cartaCoperta = require('../Images/Retro.jpg');
-
 
 
 export class GameField extends Component {
@@ -29,9 +27,8 @@ export class GameField extends Component {
     immBriscolaEstratta : "",
     briscolaEstratta: "",
     punteggioMio : 0,
-    punteggioAvversario : 1,          // sbagliato apposta per vedere se setState corregge TODO: ripristinare a 0
+    punteggioAvversario : 0,          
     idPartita : 0,
-    messaggioAlert : "Ciao",
     visibilityMazzo : "hidden",
     visibilityField : "hidden"
   };
@@ -60,20 +57,10 @@ export class GameField extends Component {
         default:
           break;
       }
-      /*
-        case "Mazzo": {
-          if (this.state.primaCartaTavola === "" && this.state.secondaCartaTavola === ""){        // Si pesca dal mazzo solo quando non ci sono carte in tavola
-            socket.emit("pescaDalMazzoReq", this.state.idPartita)
-          }
-          
-          break;
-        }
-      */
     }
   };
 
-  //useEffect(){
-  //listener(){
+
   componentDidMount() {
     const username = ReactSession.get("User");
     if (username === undefined){
@@ -138,7 +125,6 @@ export class GameField extends Component {
   
     // RISPOSTA ALLA RICHIESTA DI METTERE UNA CARTA IN TAVOLA
     socket.off("cartaGiocataRes").on("cartaGiocataRes", (outcome, carta, numeroInTavola) =>{ 
-      //window.alert("Risposta per carta giocata, esito " + outcome + " carta: " + carta)
       if (outcome){
         // se esito positivo alla richiesta di giocare una carta
         switch (carta) {
@@ -174,8 +160,6 @@ export class GameField extends Component {
 
     // QUANDO L'AVVERSARIO GIOCA LA CARTA VIENE VISUALIZZATO GRAFICAMENTE
     socket.off("cartaGiocataAvversario").on("cartaGiocataAvversario", (imagePath, numero) => {
-      //notify("L'avversario ha giocato una carta in tavola")
-      // si può rimuovere graficamente carta a caso 
       var found = false
 
       while(!found){
@@ -218,7 +202,6 @@ export class GameField extends Component {
 
 
     socket.off("fineMano").on("fineMano", (partita, cartaPescata) => {
-      //notify("FINE MANO")
       var partitaJSON = JSON.parse(partita.substring(partita.indexOf("{")))
       var cartaPescataJSON = JSON.parse(cartaPescata.substring(cartaPescata.indexOf("{")))
       // Aggiornamento punteggio

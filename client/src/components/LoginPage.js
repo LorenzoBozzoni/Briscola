@@ -6,20 +6,13 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ReactSession } from 'react-client-session';
 
-//import Spinner from "./Spinner.js"
-/*
-const Sfondo1 = require("../Images/SfondoIniziale1.jpg")
-const Sfondo2 = require("../Images/SfondoIniziale2.jpg")
-const Sfondo3 = require("../Images/SfondoIniziale3.jpg")
-*/
 
-// messo qua e importato da altre parti perchè pare essere la prima pagina compilata
+// Oggetto per la comunicazione col server tramite socket.io
 export const socket = io('http://localhost:3001',
 {
     transports: ['websocket', 'polling', 'flashsocket'],
     withCredentials: false
 })
-
 
 
 export class LoginPage extends Component {
@@ -30,21 +23,12 @@ export class LoginPage extends Component {
     access: "login"
     }  
 
-    /*
-    switchSpinnerState(){
-        if (this.state.visibilitySpinner === "hidden")
-            this.setState({visibilitySpinner:"visible"})
-        else            
-            this.setState({visibilitySpinner:"hidden"})   
-    }
-    */
-
     access(accessType){
         // accessType può essere "login" o "signup"
         this.setState({visibilitySpinner:"visible"})    // switch
         if (!socket.connected){
           socket.on('connect', () => {
-            notify(`Client connesso con id ${socket.id}`)       // connessione necessaria col server
+            notify(`Client connesso con id ${socket.id}`)       // Connessione necessaria col server
           })
         }else{
           notify(`Client connesso con id ${socket.id}`)
@@ -52,38 +36,42 @@ export class LoginPage extends Component {
           var password = document.getElementById("InputPassword1").value;
           if (accessType === "signup") {
             var confirm = document.getElementById("InputPassword2").value;
+            // Controllo che la password inserita nel signup sia uguale nelle due textbox
             if (confirm !== password){
-              notify("Password mismatch, retry")
+              notify("Password inserite diverse, riprova")
               this.setState({visibilitySpinner:"hidden"})
               return
             }
           }
+          // Emissione evento per accesso al sito
           socket.emit('access', accessType, email, password); 
         }
     
+        // Esito operazione di login/signup
         socket.off("accessOutcome").on('accessOutcome', (accessOutcome, user) => {
             this.setState({visibilitySpinner:"hidden"})  // switch
             if (!accessOutcome) {
-            //document.getElementById("").setAttribute()
-            notify("Autenticazione fallita");
+              notify("Autenticazione fallita");
             } else {
               notify("Autenticazione riuscita ");
+              // Impostiamo il valore di user in memoria (di sessione)
               ReactSession.set("User",user)
-              document.location.href = document.location + "selectGame"; // ci si sposta nella pagina per selezionare il tipo di partita
+              document.location.href = document.location + "selectGame";     // Ci si sposta nella pagina per selezionare il tipo di partita
             }
         })
     }
+
+    // Funzione per alternare il tipo di accesso che si sta facendo, quando si preme lo switch
     switchAccess(){
         if (this.state.visibilityTextBox === "hidden"){
           this.setState({visibilityTextBox:"visible", access:"signup"})
           this.setState({height:"auto"})
-        }
-        else{
+        } else {
           this.setState({visibilityTextBox:"hidden", access:"login"})
           this.setState({height:"0px"})
         }
-            
     }
+
   render(){
     return (
         <>
@@ -127,79 +115,4 @@ export class LoginPage extends Component {
       )
   }
 }
-
-
-/*
-<label className="form-check-label" htmlFor="flexSwitchCheckDefault" style={{"visibility":this.state.visibilityTextBox}}>Login</label>
-
-
-
-// FUNZIONE PER MANDARE RICHIESTA LOGIN/SIGNUP AL SERVER
-function access(accessType){
-    // accessType può essere "login" o "signup"
-    window.alert("Nel metodo di accesso");
-    switchSpinnerState()
-    if (!socket.connected){
-      socket.on('connect', () => {
-        window.alert(`Client connesso con id ${socket.id}`)       // connessione necessaria col server
-      })
-    }else{
-      var email = document.getElementById("InputEmail1").value;
-      var password = document.getElementById("InputPassword1").value;
-      socket.emit('access', accessType, email, password); 
-      window.alert("Evento accesso creato")
-    }
-  }
-*/
-  
-
-/*
-// PRELEVA IL RISULTATO DEL LOGIN/SIGNUP
-socket.on('accessOutcome', (accessOutcome) => {
-    window.alert("esito: " + accessOutcome);
-    window.alert("Ricezione evento accesso: " + accessOutcome);
-    switchSpinnerState()
-    if (!accessOutcome) {
-      //document.getElementById("").setAttribute()
-      window.alert("Autenticazione fallita");
-    } else {
-      document.location.href = document.location + "selectGame"; // ci si sposta nella pagina per selezionare il tipo di partita
-      window.alert("Autenticazione riuscita");
-    }
-  })
-
-
-
-  CAROUSEL
-
-
-                  <div className='col no-gutters' style={{height:'100vh',width:'100%'}}>
-                    <div id="carouselIndicators" className="carousel slide" data-bs-ride="true">
-                        <div className="carousel-indicators">
-                            <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="0" className="active" aria-current="true" aria-label="Slide 1"></button>
-                            <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                            <button type="button" data-bs-target="#carouselIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                        </div>
-                        <div className="carousel-inner">
-                            <div className="carousel-item active">
-                            <img src={Sfondo1} className="d-block w-100" alt="ehi1"></img>
-                            </div>
-                            <div className="carousel-item">
-                            <img src={Sfondo2} className="d-block w-100" alt="ehi2"></img>
-                            </div>
-                            <div className="carousel-item">
-                            <img src={Sfondo3} className="d-block w-100" alt="ehi3"></img>
-                            </div>
-                        </div>
-                        <button className="carousel-control-prev" type="button" data-bs-target="#carouselIndicators" data-bs-slide="prev">
-                            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span className="visually-hidden">Previous</span>
-                        </button>
-                        <button className="carousel-control-next" type="button" data-bs-target="#carouselIndicators" data-bs-slide="next">
-                            <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span className="visually-hidden">Next</span>
-                        </button>
-                    </div>
-                </div>
-*/
 

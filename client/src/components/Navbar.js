@@ -4,9 +4,10 @@ import { notify } from '../App.js';
 
 export class Navbar extends Component {
   state = {
-    id:this.props.PlayerId
+    id:this.props.PlayerUsername
   }
 
+  // Funzione asincona per le richieste HTTP 
   async pageRequest(page){
     var response = await fetch(page, {
       method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -18,6 +19,7 @@ export class Navbar extends Component {
       },
     });
 
+    // Visualizzazione risposta (quando pronta) in arrivo dopo richiesta HTTP
     const text = await response.text()
     window.alert(text)
   }
@@ -43,7 +45,7 @@ export class Navbar extends Component {
             >Regole</a>
           </li>
           <li className="nav-item">
-            <a className="nav-link" style={{float:"right"}}>Il tuo username è: {this.props.PlayerId}</a>
+            <a className="nav-link" style={{float:"right"}}>Il tuo username è: {this.props.PlayerUsername}</a>
           </li>
         </ul>
       </div>
@@ -55,18 +57,3 @@ export class Navbar extends Component {
 }
 
 
-
-/*
-
-          <li className="nav-item dropdown">
-            <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Link
-            </a>
-            <ul className="dropdown-menu">
-              <li><a className="dropdown-item" href="#">Action</a></li>
-              <li><a className="dropdown-item" href="#">Another action</a></li>
-              <li><hr className="dropdown-divider"></hr></li>
-              <li><a className="dropdown-item" href="#">Something else here</a></li>
-            </ul>
-          </li>
-*/

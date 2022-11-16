@@ -69,7 +69,6 @@ class Mazzo {
         var myString = JSON.stringify(this.mazzo)
         console.log("Lunghezza array --> ",this.mazzo.length)
     }
-
     
     pop() {
         return this.mazzo.pop()

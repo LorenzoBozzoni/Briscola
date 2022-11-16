@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
@@ -11,12 +10,10 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ReactSession } from 'react-client-session';
 
-// Dettagli transport non so se sono corretti, sono per l'admin panel teoricamente ma non va
-ReactSession.setStoreType("sessionStorage");
-export const notify = (message) => toast(message);
+ReactSession.setStoreType("sessionStorage");           // Selezioniamo in che modo salvare le informazioni con ReactSession
+export const notify = (message) => toast(message);     // Funzione per la visualizzazione dei messaggi toast 
 
 function App() {
-  // TODO: fare in modo che le pagine non iniziali non siano raggiungibili tramire url nel browser
   return (
     <>
     <Routes> 
