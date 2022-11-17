@@ -1,15 +1,6 @@
 REGOLE DI GIOCO
-Valore in punti delle carte:
-Asso (A) punti 11
-Tre (3) punti 10
-Re (10) punti 4
-Cavallo (9) punti 3
-Donna (8) punti 2
-7, 6, 5, 4 e 2 (dette scartine o scartini o lisci) punti 0
-In alcune zone, come il basso Piemonte e l'Oltrepò Pavese, i valori del Tre e del Sette sono invertiti. In questo modo il Sette diventa la seconda carta più alta, e il Tre diventa uno scartino.
 
 Riportiamo le regole tratte da Wikipedia:
-
 (Fonte: http://it.wikipedia.org
 Questo articolo è concesso in base alla GNU Free Documentation License, il che significa che puoi copiare il suo contenuto, a condizione che il tutto rimanga sotto la licenza che trovi andando a http://www.gnu.org/copyleft/fdl.html)
 La briscola è un popolare gioco di carte giocato con un mazzo di 40 carte, di quattro semi; solitamente giocato con 2 o 4 (2 coppie) giocatori. Si gioca con un mazzo di 40 carte diviso in 4 semi di 10 carte ciascuno. I punti disponibili per ciascuna partita sono in totale 120, vince chi ne realizza almeno 61; se i punti sono 60 il gioco è pari. Terminate la disposizione dei giocatori, designazione del mazziere e distribuzione delle carte, secondo gli usi locali, il gioco classico segue delle regole di base abbastanza semplici:
