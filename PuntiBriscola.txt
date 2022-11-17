@@ -1,0 +1,9 @@
+VALORI IN PUNTI DELLE CARTE
+
+Asso (A) punti 11
+Tre (3) punti 10
+Re (10) punti 4
+Cavallo (9) punti 3
+Donna (8) punti 2
+7, 6, 5, 4 e 2 (dette scartine o scartini o lisci) punti 0
+In alcune zone, come il basso Piemonte e l'Oltrepò Pavese, i valori del Tre e del Sette sono invertiti. In questo modo il Sette diventa la seconda carta più alta, e il Tre diventa uno scartino.

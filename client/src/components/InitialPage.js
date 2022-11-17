@@ -6,7 +6,7 @@ import { ToastContainer } from 'react-toastify';
 import {Navbar} from './Navbar.js'
 import 'react-toastify/dist/ReactToastify.css';
 import { ReactSession } from 'react-client-session';
-import { Wallpaper } from './Wallpaper';
+import "./InitialPage.css";
 
 
 export class InitialPage extends Component {

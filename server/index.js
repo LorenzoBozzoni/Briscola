@@ -294,6 +294,12 @@ io.on("connection", (socket) =>{
 })
 
 // Richiesta HTTP per visualizzare regole briscola 
+app.get('/PuntiBriscola', (req, res) => {
+  console.log("[info] Richiesta per punti del gioco arrivata")
+  res.download("../PuntiBriscola.txt")
+})
+
+// Richiesta HTTP per visualizzare regole briscola 
 app.get('/RegoleBriscola', (req, res) => {
   console.log("[info] Richiesta per regole del gioco arrivata")
   res.download("../RegoleBriscola.txt")

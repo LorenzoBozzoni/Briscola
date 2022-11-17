@@ -6,14 +6,14 @@
         }
 
     section{
-         background:radial-gradient(#eee,#888);
+        background:radial-gradient(#eee,#888);
         width: 100%;
         height: 100%;
         position:absolute;
     }
     
     .back{
-		background-image:url("Retro.jpg");
+		background-image:url("../Images/Retro.jpg");
         height: 250px;
         width: 143px;
         position:absolute;

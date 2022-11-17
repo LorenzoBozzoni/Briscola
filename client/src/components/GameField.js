@@ -6,6 +6,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { MinimalSpinner } from 'loading-animations-react';
 import { ReactSession } from 'react-client-session';
+import "./GameField.css"
+//import { GameField } from './GameField';
 
 // Immagine retro della carta 
 const cartaCoperta = require('../Images/Retro.jpg');
@@ -318,36 +320,36 @@ export class GameField extends Component {
       <div className="container bg-success" style={{visibility:this.state.visibilityField, position:"fixed", top:0, right:0, width:"100vw", height:"100vh"}}>   
       <div className="row">
         <div className="col-sm" id="SecondPlayerFirstCard" onClick={this.handleClick}>
-          <img className="rounded-4" src={this.state.primaCartaAvversario} alt=""></img>
+          <img className="rounded-4 game-card" src={this.state.primaCartaAvversario} alt=""></img>
         </div>
         <div className="col-sm" id="SecondPlayerSecondCard" onClick={this.handleClick}>
-          <img className="rounded-4" src={this.state.secondaCartaAvversario} alt=""></img>
+          <img className="rounded-4 game-card" src={this.state.secondaCartaAvversario} alt=""></img>
         </div>
         <div className="col-sm" id="SecondPlayerThirdCard" onClick={this.handleClick}>
-          <img className="rounded-4" src={this.state.terzaCartaAvversario} alt=""></img>
+          <img className="rounded-4 game-card" src={this.state.terzaCartaAvversario} alt=""></img>
         </div>
         <div className="col-sm" id="SecondPlayerPoints" onClick={this.handleClick}>
-          <div className="Punteggio rounded-5 bg-light">{this.state.punteggioAvversario}</div>
+          <div className="Punteggio rounded-5 text-light">{this.state.punteggioAvversario}</div>
         </div>
       </div>
       <div className="row">
-        <div className="col-sm"><img className="rounded-4" src={cartaCoperta} id="Mazzo" style={{float: "left", visibility: this.state.visibilityMazzo}}></img></div>     
-        <div className="col-sm"><img className="rounded-4" src={this.state.immBriscolaEstratta} style={{float: "left",transform: "rotate(90deg)"}}></img></div>      
-        <div className="col-sm"><img className="rounded-4" src={this.state.primaCartaTavola} alt=""></img></div>
-        <div className="col-sm"><img className="rounded-4" src={this.state.secondaCartaTavola} alt=""></img></div>
+        <div className="col-sm"><img className="rounded-4 game-card" src={cartaCoperta} id="Mazzo" style={{float: "left", visibility: this.state.visibilityMazzo}}></img></div>     
+        <div className="col-sm"><img className="rounded-4 game-card" src={this.state.immBriscolaEstratta} style={{float: "left",transform: "rotate(90deg)"}}></img></div>      
+        <div className="col-sm"><img className="rounded-4 game-card" src={this.state.primaCartaTavola} alt=""></img></div>
+        <div className="col-sm"><img className="rounded-4 game-card" src={this.state.secondaCartaTavola} alt=""></img></div>
       </div>
       <div className="row">
         <div className="col-sm" id="FirstPlayerFirstCard" onClick={this.handleClick}>
-          <img className="rounded-4" src={this.state.immPrimaCartaMia} alt="" style={{ position : "relative",bottom: 0}}></img>
+          <img className="rounded-4 game-card" src={this.state.immPrimaCartaMia} alt="" style={{ position : "relative",bottom: 0}}></img>
         </div>
         <div className="col-sm" id="FirstPlayerSecondCard" onClick={this.handleClick}>
-          <img className="rounded-4" src={this.state.immSecondaCartaMia} alt="" style={{position : "relative",bottom : 0}}></img>
+          <img className="rounded-4 game-card" src={this.state.immSecondaCartaMia} alt="" style={{position : "relative",bottom : 0}}></img>
         </div>
         <div className="col-sm" id="FirstPlayerThirdCard" onClick={this.handleClick}>
-          <img className="rounded-4" src={this.state.immTerzaCartaMia} alt="" style={{position : "relative",bottom : 0}}></img>
+          <img className="rounded-4 game-card" src={this.state.immTerzaCartaMia} alt="" style={{position : "relative",bottom : 0}}></img>
         </div>
         <div className="col-sm" id="FirstPlayerPoints" onClick={this.handleClick}>
-          <div className="Punteggio rounded-5 bg-light">{this.state.punteggioMio}</div>
+          <div className="Punteggio rounded-5 text-light">{this.state.punteggioMio}</div>
         </div>
       </div>
       </div>

@@ -36,15 +36,22 @@ export class Navbar extends Component {
       <div className="collapse navbar-collapse" id="navbarScroll">
         <ul className="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" >
           <li className="nav-item">
-            <a className="nav-link active" aria-current="page" target="_blank" /*href="https://it.wikipedia.org/wiki/Briscola#Origine_ed_etimologia"*/ onClick={() => {this.pageRequest("/StoriaBriscola")}}
+            <a className="nav-link active" aria-current="page" target="_blank" role="button"/*href="https://it.wikipedia.org/wiki/Briscola#Origine_ed_etimologia"*/ onClick={() => {this.pageRequest("/StoriaBriscola")}}
             >Storia del gioco</a>
           </li>
           <li className="nav-item">
-            <a className="nav-link active" aria-current="page" target="_blank" /*href="https://it.wikipedia.org/wiki/Briscola#Regole"*/ onClick={() => {this.pageRequest("/RegoleBriscola")}}
+            <a className="nav-link active" aria-current="page" target="_blank" role="button" onClick={() => {this.pageRequest("/PuntiBriscola")}}
+            >Valore delle carte</a>
+          </li>
+          <li className="nav-item">
+            <a className="nav-link active" aria-current="page" target="_blank" role="button"/*href="https://it.wikipedia.org/wiki/Briscola#Regole"*/ onClick={() => {this.pageRequest("/RegoleBriscola")}}
             >Regole</a>
           </li>
           <li className="nav-item">
-            <a className="nav-link" style={{float:"right"}}>Il tuo username è: {this.props.PlayerUsername}</a>
+            <a className="nav-link active" aria-current="page" target="_blank">Il tuo username è:</a> 
+          </li>
+          <li>
+            <a className="nav-link" style={{float:"right"}}>{this.props.PlayerUsername}</a>
           </li>
         </ul>
       </div>

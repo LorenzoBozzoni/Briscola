@@ -2,3 +2,8 @@
     position: fixed;
     bottom: 0px;
 }
+
+.game-card{
+    max-height: 246px;
+    max-width: 144px;
+}
