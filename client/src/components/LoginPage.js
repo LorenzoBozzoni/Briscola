@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
-//import Sfondo1 from 'Images/SfondoIniziale.jpg';
 import { Wallpaper } from './Wallpaper.js';
 import { io } from 'socket.io-client'
 import { notify } from '../App.js'
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ReactSession } from 'react-client-session';
 
@@ -29,10 +28,10 @@ export class LoginPage extends Component {
     this.setState({ visibilitySpinner: "visible" })    // switch
     if (!socket.connected) {
       socket.on('connect', () => {
-        notify(`Client connesso con id ${socket.id}`)       // Connessione necessaria col server
+        //notify(`Client connesso con id ${socket.id}`)       // Connessione necessaria col server
       })
     } else {
-      notify(`Client connesso con id ${socket.id}`)
+      //notify(`Client connesso con id ${socket.id}`)
       var email = document.getElementById("InputEmail1").value;
       var password = document.getElementById("InputPassword1").value;
       if (accessType === "signup") {
@@ -40,6 +39,11 @@ export class LoginPage extends Component {
         // Controllo che la password inserita nel signup sia uguale nelle due textbox
         if (confirm !== password) {
           notify("Password inserite diverse, riprova")
+          this.setState({ visibilitySpinner: "hidden" })
+          return
+        }
+        if (password.length < 8) {
+          notify("La password deve essere di almeno 8 caratteri")
           this.setState({ visibilitySpinner: "hidden" })
           return
         }
@@ -52,7 +56,7 @@ export class LoginPage extends Component {
     socket.off("accessOutcome").on('accessOutcome', (accessOutcome, user) => {
       this.setState({ visibilitySpinner: "hidden" })  // switch
       if (!accessOutcome) {
-        notify("Autenticazione fallita");
+        notify("Autenticazione fallita, controlla di aver inserito correttamente i dati oppure cambia email se stai facendo signup, potrebbe essere già in uso");
       } else {
         notify("Autenticazione riuscita ");
         // Impostiamo il valore di user in memoria (di sessione)
@@ -98,10 +102,6 @@ export class LoginPage extends Component {
               <div className="mb-3" style={{ visibility: this.state.visibilityTextBox, height: this.state.height }} id="hiddenTxtPassword">
                 <label htmlFor="InputPassword2" className="form-label">Write password again</label>
                 <input type="password" className="form-control" id="InputPassword2"></input>
-              </div>
-              <div className="mb-3 form-check">
-                <input type="checkbox" className="form-check-input" id="Check1"></input>
-                <label className="form-check-label" htmlFor="Check1">Check me out</label>
               </div>
               <button type="button" className="btn btn-primary" onClick={() => this.access(this.state.access)}>{this.state.access}</button>
             </form>

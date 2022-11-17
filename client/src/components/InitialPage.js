@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import {socket} from '../components/LoginPage.js'
 import { notify } from '../App.js'
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import {Navbar} from './Navbar.js'
 import 'react-toastify/dist/ReactToastify.css';
 import { ReactSession } from 'react-client-session';
@@ -73,12 +73,8 @@ export class InitialPage extends Component {
     return(
     <>
     <Navbar PlayerUsername={this.state.username}>    
-
     </Navbar>
     <div className="d-grid gap-2 mx-auto" style={{"height":"95vh"}}>
-      <Link to="./partita" className="btn btn-primary" id="SingleGameButton" onClick={() => this.gameTypeSelected("single")}>
-        <p className='gameTypeLabel'>SINGLE PLAYER</p>
-      </Link>
       <Link to="./partita" className="btn btn-primary" id="MultiGameButton" onClick={() => this.gameTypeSelected("multi")}>
         <p className='gameTypeLabel'>RANDOM PLAYER</p>
       </Link>

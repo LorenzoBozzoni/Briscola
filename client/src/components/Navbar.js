@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import 'bootstrap/dist/css/bootstrap.css';
-import { notify } from '../App.js';
 
 export class Navbar extends Component {
   state = {
@@ -30,7 +29,7 @@ export class Navbar extends Component {
   <>
   <nav className="navbar navbar-expand-lg bg-light">
     <div className="container-fluid">
-      <a className="navbar-brand" href="#">Briscola</a>
+      <a className="navbar-brand" href="">Briscola</a>
       <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
         <span className="navbar-toggler-icon"></span>
       </button>

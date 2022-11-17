@@ -20,7 +20,7 @@ const dbURI = "mongodb+srv://lorebozzo:-4J2Rht4QYq6S!!@cluster0.3wfvfel.mongodb.
 const mongoClient = new MongoClient(dbURI);
 async function run() {
   await mongoClient.connect();
-  console.log("Siamo connessi a MongoDB Atlas!");
+  console.log("[info] Siamo connessi a MongoDB Atlas!");
 }
 run().catch(err => console.log("Errore connessione: " + err))
 
@@ -37,7 +37,6 @@ const io = new Server(server, {
 })
 
 // Waiting rooms per capire chi sta aspettando un avversario 
-var single = [];
 var multi = [];
 var friend = [];
 
@@ -63,17 +62,23 @@ io.on("connection", (socket) =>{
     console.log("[info] Modalità di accesso: ",accessMode,"\nemail: ",email,"\npassword: ",password)
     if (accessMode === "signup"){
       const selectResult = await collection.findOne({user: email});
-      const insertResult = collection.insertOne({user: email, password: password});      // tolto async --> AGGIUNGERE HASH!
-      if (insertResult && selectResult == null) {     // se riesce l'inserimento e l'username non è già usato beme
-        outcome = true;
-        users.push({"user":email, "id":socket.id})
+      console.log("[info] Risultato select MongoDb: ", selectResult)
+      if (selectResult == null) {     // se riesce l'inserimento e l'username non è già usato beme
+        const insertResult = collection.insertOne({user: email, password: password});   
+        if (insertResult) {
+          outcome = true;
+          users.push({"user":email, "id":socket.id})
+        }else{
+          console.log("[info] Signup non andato a buon fine: insert non corretta")
+        }
       } else {
+        console.log("[info] Signup non andato a buon fine: email già usata")
         outcome = false;
       }
     }else{
       // login
-      const selectResult = await collection.findOne({user: email, password: password});
-      console.log("selectResult: ", selectResult)
+      const selectResult = await collection.findOne({user: email, password: password});       // Controlliamo che non ci sia già un utenete con lo stesso username
+      console.log("[info] Risultato select MongoDb: ", selectResult)
       if (selectResult != null){ 
         outcome = true; 
         console.log("[info] Esito login true")
@@ -83,7 +88,7 @@ io.on("connection", (socket) =>{
         console.log("[info] Esito login falso")   
       }
     }
-    socket.emit("accessOutcome", outcome, email)   // TODO: mettere io.to() ?
+    socket.emit("accessOutcome", outcome, email)   
   })
 
   // SELEZIONE TIPO DI PARTITA CHE SI VUOLE FARE
@@ -95,13 +100,6 @@ io.on("connection", (socket) =>{
         if (idAvversario !== null && idAvversario !== socket.id){
           io.to(idAvversario).emit("RichiestaInizioPartita", getUserFromId(users,socket.id))     // Mandiamo la richiesta all'amico
         }
-        break;
-      }
-      case "single": {
-        single.push(socket.id);
-        var tmp = new Partita(socket.id, "server")    // Creiamo subito una nuova partita con questi due avversari
-        partite.push(tmp)
-        io.to(socket.id).emit("partitaIniziata", JSON.stringify(tmp), JSON.stringify(tmp.getMazzo().getMano()), JSON.stringify(tmp.getBriscolaEstratta()))
         break;
       }
       case "multi": {
@@ -317,13 +315,11 @@ function uscita(id, disconnesso){
   console.log("[info] Utente disconnesso: ", id);
 
   // Remove from waiting room if (in it) and disconnected
-  if(single.indexOf(item => item === (id).toString())){
-    single.pop(id)
-  } else if(multi.find(item => item === (id).toString)){
-      multi.pop(id)
-  } else if(single.find(item => item === (id).toString())){
-    friend.pop(id)
-  }
+if(multi.find(item => item === (id).toString)){
+    multi.pop(id)
+} else if(friend.find(item => item === (id).toString())){
+  friend.pop(id)
+}
 
   var sendTo = ""
   // Remove from match 

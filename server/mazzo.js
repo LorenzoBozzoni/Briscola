@@ -56,18 +56,10 @@ class Mazzo {
                     }
                 }
                 ImagePath = "../Images/Piacentine/"+(j+(i*10)+1) + ".jpg"
-                //ImagePath = "../../Piacentine/"+(j+(i*10)) + ".jpg"
-                console.log("Numero carta -> ",(j+(i*10)))
-                console.log("Numero del seme -> ", j)
-                console.log("Valore -> ", valore)
-                console.log("Seme -> ", seme)
-                console.log("ImagePath -> ", ImagePath)
-                console.log("-----------------------------------")
                 this.mazzo[(j+(i*10))] = new Carta(valore, j+1, seme, false, ImagePath)       // di default non impostiamo una briscola
             }
         }
         var myString = JSON.stringify(this.mazzo)
-        console.log("Lunghezza array --> ",this.mazzo.length)
     }
     
     pop() {

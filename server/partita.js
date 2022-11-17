@@ -6,17 +6,10 @@ function mischia(array) {
     var tmpSwitch;
     var randomIndex = 0;
 
-    console.log("ARRAY PRIMA DEL CICLO: " + array)
-
-    for (let i = 0; i < array.length; i++) {
-        tmpSwitch = array[i]
-        randomIndex = Math.floor(Math.random() * array.length)
-        console.log("array[",i,"]: ", array[i])
-        console.log("array[",randomIndex,"]: ", array[randomIndex])
-        array[i] = array[randomIndex]
-        array[randomIndex] = tmpSwitch
-        console.log("array[",i,"]: ", array[i])
-        console.log("array[",randomIndex,"]: ", array[randomIndex])
+    for (let i = 0; i < array.mazzo.length; i++) {
+        tmpSwitch = array.mazzo[i]
+        randomIndex = Math.floor(Math.random() * array.mazzo.length)
+        array.mazzo[i] = array.mazzo[randomIndex]
     }
     return array;
 }

@@ -42,11 +42,6 @@ body > #root > div {
   width: 100vw;
 }
 
-#SingleGameButton {
-  background-image: url("./Images/Singolo.jpg");
-  background-size: cover;
-}
-
 
 #MultiGameButton {
   background-image: url("./Images/../Images/ConAvversari.jpg");

@@ -2,9 +2,9 @@ import {React, Component} from 'react'
 import 'bootstrap/dist/css/bootstrap.css';
 import {socket} from "./LoginPage.js"
 import { notify } from '../App.js'
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Dots, Waves, Spinner, TrinitySpinner, MinimalSpinner } from 'loading-animations-react';
+import { MinimalSpinner } from 'loading-animations-react';
 import { ReactSession } from 'react-client-session';
 
 // Immagine retro della carta 
@@ -68,7 +68,7 @@ export class GameField extends Component {
       document.location.href = "/"; 
     }
     socket.off("partitaIniziata").on("partitaIniziata", (partita, mano, briscolaEstrattaParam) => {
-      notify("PARTITA INIZIATA, MIOID: "+ socket.id)
+
       // mano e partita vengono mandate come stringhe, vanno sistemate per formato corretto e poi convertite 
       var manoJSON = JSON.parse(mano.substring(mano.indexOf("{")))              // , mano.lastIndexOf("}")
       var partitaJSON = JSON.parse(partita.substring(partita.indexOf("{")))     // , partita.lastIndexOf("}")
@@ -218,13 +218,14 @@ export class GameField extends Component {
         notify("Tocca a me")
       }
 
-      var str = "Carte rimanenti "+ partitaJSON.CarteRimanenti + " tipo: " + typeof(partitaJSON.CarteRimanenti)
-      notify(str)
+
 
       if (partitaJSON.CarteRimanenti === 0){
         this.setState({immBriscolaEstratta:""})
         this.setState({visibilityMazzo:"hidden"})
-      } 
+      } else if (partitaJSON.CarteRimanenti === 5) {
+        notify("Mancano 5 carte nel mazzo")
+      }
       
       this.setState({
         primaCartaTavola:"",
@@ -310,8 +311,8 @@ export class GameField extends Component {
   render() { 
     return (
       <>
-      <div style={{"height":"30%", "width":"30%", "margin":"40%", "visibility":(this.state.visibilityField === "hidden")? "visible" : "hidden"}} > 
-        <MinimalSpinner color="green" text="Aspettando l'avversario casuale"/>
+      <div style={{"height":"200px", "width":"200px", "position":"absolute", "marginLeft":"45%", "marginTop":"15%", "visibility":(this.state.visibilityField === "hidden")? "visible" : "hidden"}} > 
+        <MinimalSpinner color="green" text="Aspettando l'avversario..."/>
       </div>
       <div className="BiggerContainer">
       <div className="container bg-success" style={{visibility:this.state.visibilityField, position:"fixed", top:0, right:0, width:"100vw", height:"100vh"}}>   
