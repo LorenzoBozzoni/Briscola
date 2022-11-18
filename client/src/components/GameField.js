@@ -10,7 +10,7 @@ import "./GameField.css"
 //import { GameField } from './GameField';
 
 // Immagine retro della carta 
-const cartaCoperta = require('../Images/Retro.jpg');
+const cartaCoperta = require('../Images/RetroGrande.jpg');
 
 
 export class GameField extends Component {
