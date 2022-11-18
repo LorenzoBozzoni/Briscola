@@ -33,6 +33,8 @@ export class GameField extends Component {
     idPartita: 0,
     visibilityMazzo: "hidden",
     visibilityField: "hidden",
+    //visibilityEsito: "hidden",
+    esitoPartita: ""
   };
 
 
@@ -289,9 +291,14 @@ export class GameField extends Component {
       notify("La partita è finita")
       notify("tipo vincitore" + typeof (vincitore))
       notify("tipo socket.id" + typeof (socket.id))
-        (socket.id === vincitore) ? notify("Hai vinto!") : notify("Hai perso!")
+      if (socket.id === vincitore) {
+        notify("Hai vinto!")
+        this.state.esitoPartita = "VITTORIA!"
+      } else {
+        notify("Hai perso!")
+        this.state.esitoPartita = "SCONFITTA..."
+      }
       window.PopStateEvent()
-
     })
 
     socket.off("disconnessioneAvversario").on("disconnessioneAvversario", () => {
@@ -320,6 +327,7 @@ export class GameField extends Component {
         </div>
         <div className="BiggerContainer">
           <div className="container bg-success" style={{ visibility: this.state.visibilityField, position: "fixed", top: 0, right: 0, width: "100vw", height: "100vh" }}>
+            <div id='Celebration' className='h1 text-white'>{this.state.esitoPartita}</div>
             <div className="row">
               <div className="col-sm" id="SecondPlayerFirstCard" onClick={this.handleClick}>
                 <img className="rounded-4 game-card" src={this.state.primaCartaAvversario} alt=""></img>
