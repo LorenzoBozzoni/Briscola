@@ -46,11 +46,17 @@ body > #root > div {
 #MultiGameButton {
   background-image: url("./Images/../Images/ConAvversari.jpg");
   background-size: cover;
+  transition: transform .2s linear;
 }
 
 #FriendGameButton {
   background-image: url("./Images/../Images/ConAvversario1.jpg");
   background-size: cover;
+  transition: transform .2s linear;
+}
+
+#MultiGameButton:hover, #FriendGameButton:hover{
+  transform: scale(1.01);
 }
 
 .gameTypeLabel {

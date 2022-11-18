@@ -219,8 +219,7 @@ io.on("connection", (socket) =>{
             console.log("[err] Errore try catch gestione mani, errore: " + err)
             io.to(socket.id).emit("cartaGiocataRes", false)
           }
-          // Fare visualizzare la prima e la seconda carta giocata
-
+          
           // Setta nuovo ChiGioca
           partite[i].setChiInizia(idVincitoreMano)
           // Calcola punteggio
@@ -229,7 +228,7 @@ io.on("connection", (socket) =>{
           }else{
             partite[i].addToPunteggio2(primaCartaGiocata.getValore() + secondaCartaGiocata.getValore())
           }
-
+          
           console.log("Numero di carte rimanenti ---------------------------> ",partite[i].getCarteRimanenti())
 
           // Ritorno messaggio e aggiornamento + carta pescata automaticamente per entrambi i giocatori (in ordine)
@@ -247,21 +246,27 @@ io.on("connection", (socket) =>{
               }else{
                 vincitore = partite[i].getIdGiocatore2()
               }
+              setTimeout(() => {
               io.to(socket.id).emit("finePartita", vincitore)
               io.to(partite[i].getAvversario(socket.id)).emit("finePartita", vincitore)
-
+              }, 1000)
               // Gestione di fine partita
               partite.splice(i, 1)   // Rimozione della partita dalla lista delle partite in corso
               break
             } else {
               partite[i].decrementManiFinali()
+              setTimeout(() => {
               io.to(socket.id).emit("fineMano", JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))
               io.to(partite[i].getAvversario(socket.id)).emit("fineMano",  JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))  //TODO: sostituire con pop()
+              }, 1000)
             }
-              
+            
           }else {
+            // Timeout per vedere le carte prima di fare la giocata successiva
+          setTimeout(() => {
             io.to(socket.id).emit("fineMano", JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))
             io.to(partite[i].getAvversario(socket.id)).emit("fineMano",  JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))  //TODO: sostituire con pop()
+          }, 1000)
           }
           // Svuota CartaInTavola
           partite[i].setCartaInTavola(null)
