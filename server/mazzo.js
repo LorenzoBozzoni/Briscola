@@ -60,6 +60,7 @@ class Mazzo {
             }
         }
         var myString = JSON.stringify(this.mazzo)
+        console.log(myString)
     }
     
     pop() {

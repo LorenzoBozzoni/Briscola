@@ -10,6 +10,7 @@ function mischia(array) {
         tmpSwitch = array.mazzo[i]
         randomIndex = Math.floor(Math.random() * array.mazzo.length)
         array.mazzo[i] = array.mazzo[randomIndex]
+        array.mazzo[randomIndex] = tmpSwitch            // Completiamo lo scambio
     }
     return array;
 }

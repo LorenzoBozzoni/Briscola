@@ -118,7 +118,7 @@ export class GameField extends Component {
       // Evento che viene scatenato quando si preme il pulsante "indietro" del browser
       window.addEventListener('popstate', (event) => {
         if (this.state.idPartita !== 0){
-          notify("La partita verrà conclusa")
+          //notify("La partita verrà conclusa")
         }
         socket.emit("AggiornaID", username)
         socket.emit("abbandonaPartita")
@@ -131,16 +131,16 @@ export class GameField extends Component {
         // se esito positivo alla richiesta di giocare una carta
         switch (carta) {
           case this.state.primaCartaMia:
-            this.setState({primaCartaMia:""})     // Ovviamente allo svuotamento corrisponderà una "azione grafica" associata
-            this.setState({immPrimaCartaMia : ""})
+            this.setState({primaCartaMia:"",immPrimaCartaMia : ""})     // Ovviamente allo svuotamento corrisponderà una "azione grafica" associata
+            //this.setState({immPrimaCartaMia : ""})
             break;
           case this.state.secondaCartaMia:
-            this.setState({secondaCartaMia:""})
-            this.setState({immSecondaCartaMia : ""})
+            this.setState({secondaCartaMia:"",immSecondaCartaMia : ""})
+            //this.setState({immSecondaCartaMia : ""})
             break;
           case this.state.terzaCartaMia:
-            this.setState({terzaCartaMia:""})
-            this.setState({immTerzaCartaMia : ""})
+            this.setState({terzaCartaMia:"",immTerzaCartaMia : ""})
+            //this.setState({immTerzaCartaMia : ""})
             break;
           default:
             break;
@@ -239,7 +239,7 @@ export class GameField extends Component {
       // Rimuovere le carte in tavola e aggiungere quelle in mano
       const numeroCarta = cartaPescataJSON.ImagePath.substring(cartaPescataJSON.ImagePath.lastIndexOf("/")+1,cartaPescataJSON.ImagePath.lastIndexOf("."))
 
-      // Bisogna capire quale carta è stata giocata per capire dove inserire quella appena pescata
+      // Bisogna trovare quale carta è stata giocata per capire dove inserire quella appena pescata
       if (this.state.primaCartaMia === "") {
         this.setState({
           immPrimaCartaMia:require("../Images/Napoletane/"+numeroCarta+".jpg"),
@@ -250,7 +250,7 @@ export class GameField extends Component {
           immSecondaCartaMia:require("../Images/Napoletane/"+numeroCarta+".jpg"),
           secondaCartaMia:cartaPescata
         })
-      } else {      // TODO: convertire in else if?
+      } else if (this.state.terzaCartaMia === ""){      // TODO: convertire in else if?
         this.setState({
           immTerzaCartaMia:require("../Images/Napoletane/"+numeroCarta+".jpg"),
           terzaCartaMia:cartaPescata

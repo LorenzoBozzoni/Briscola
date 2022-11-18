@@ -150,7 +150,7 @@ io.on("connection", (socket) =>{
   socket.on("cartaGiocataReq", (idPartita, cartaGiocata) => {
     // carta giocata è una stringa contentente un json. Deve essere convertita con JSON.parse per poter accedere alle sue proprietà
     cartaGiocata = JSON.parse(cartaGiocata)
-    
+    console.log(cartaGiocata)
     // Scorri tutte le partite in corso 
     for (let i = 0; i < partite.length; i++) {
       if ((partite[i].getIdPartita()).toString() === idPartita){
@@ -199,7 +199,13 @@ io.on("connection", (socket) =>{
                 if (primaCartaGiocata.getValore() > secondaCartaGiocata.getValore()){
                   idVincitoreMano = partite[i].getAvversario(socket.id)
                   //partite[i].setChiInizia(partite[i].getAvversario(socket.id))     // Il turno successivo è iniziato dall'avversario del giocatore nel metodo qua 
-                } else{
+                } else if (primaCartaGiocata.getValore() === secondaCartaGiocata.getValore()) {
+                    if (primaCartaGiocata.getNumero() > secondaCartaGiocata.getNumero()){
+                      idVincitoreMano = partite[i].getAvversario(socket.id)
+                    } else {
+                      idVincitoreMano = socket.id
+                    }
+                } else {
                   idVincitoreMano = socket.id
                   //partite[i].setChiInizia(socket.id)
                 }
@@ -237,9 +243,9 @@ io.on("connection", (socket) =>{
             if (partite[i].getManiFinali() === 1){
               var vincitore;
               if (partite[i].getPunteggio1 > partite[i].getPunteggio2){
-                vincitore = partite[i].getGiocatore1()
+                vincitore = partite[i].getIdGiocatore1()
               }else{
-                vincitore = partite[i].getGiocatore2()
+                vincitore = partite[i].getIdGiocatore2()
               }
               io.to(socket.id).emit("finePartita", vincitore)
               io.to(partite[i].getAvversario(socket.id)).emit("finePartita", vincitore)
@@ -332,10 +338,13 @@ if(multi.find(item => item === (id).toString)){
   for (let i = 0; i < partite.length; i++) {
     if (partite[i].getIdGiocatore1() === id){
       sendTo = partite[i].getIdGiocatore2()
+      partite.splice(i, 1)
     } else if (partite[i].getIdGiocatore2() === id){
       sendTo = partite[i].getIdGiocatore1()
+      partite.splice(i, 1)
     }
   }
+
 
   if (disconnesso){
     io.to(sendTo).emit("disconnessioneAvversario")
