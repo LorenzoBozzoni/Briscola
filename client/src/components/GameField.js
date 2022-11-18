@@ -300,8 +300,6 @@ export class GameField extends Component {
       this.setState({ secondaCartaTavola: "" })
 
       notify("La partita è finita")
-      notify("tipo vincitore" + typeof (vincitore))
-      notify("tipo socket.id" + typeof (socket.id))
       if (socket.id === vincitore) {
         notify("Hai vinto!")
         this.state.esitoPartita = "VITTORIA!"
