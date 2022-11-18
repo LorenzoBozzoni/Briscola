@@ -350,13 +350,13 @@ export class GameField extends Component {
             </div>
             <div className="row">
               <div className="col-sm" id="FirstPlayerFirstCard" onClick={this.handleClick}>
-                <img className="rounded-4 game-card" src={this.state.immPrimaCartaMia} alt="" style={{ position: "relative", bottom: 0 }}></img>
+                <img className="rounded-4 game-card my-card" role="button" src={this.state.immPrimaCartaMia} alt="" style={{ position: "relative", bottom: 0 }}></img>
               </div>
               <div className="col-sm" id="FirstPlayerSecondCard" onClick={this.handleClick}>
-                <img className="rounded-4 game-card" src={this.state.immSecondaCartaMia} alt="" style={{ position: "relative", bottom: 0 }}></img>
+                <img className="rounded-4 game-card my-card" role="button" src={this.state.immSecondaCartaMia} alt="" style={{ position: "relative", bottom: 0 }}></img>
               </div>
               <div className="col-sm" id="FirstPlayerThirdCard" onClick={this.handleClick}>
-                <img className="rounded-4 game-card" src={this.state.immTerzaCartaMia} alt="" style={{ position: "relative", bottom: 0 }}></img>
+                <img className="rounded-4 game-card my-card" role="button" src={this.state.immTerzaCartaMia} alt="" style={{ position: "relative", bottom: 0 }}></img>
               </div>
               <div className="col-sm" id="FirstPlayerPoints" onClick={this.handleClick}>
                 <div className="Punteggio rounded-5 text-light">{this.state.punteggioMio}</div>

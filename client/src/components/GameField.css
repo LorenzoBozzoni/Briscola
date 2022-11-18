@@ -8,6 +8,15 @@
     max-width: 144px;
 }
 
+.my-card{
+    transition: transform .1s linear;
+}
+
+.my-card:hover{
+    transform: scale(1.05);
+}
+
+
 #Celebration{
     position: absolute;
     top: 40%;
