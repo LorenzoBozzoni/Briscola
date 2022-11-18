@@ -45,9 +45,14 @@ export class InitialPage extends Component {
     }else{
       var friend = ""
       friend = window.prompt("Inserisci l'username dell'avversario")
-      if (friend !== null) {
-        socket.emit('gameTypeSelected', modalità, friend);
-        this.props.navigate("/selectGame/partita")
+      if(friend !== null){
+        if (friend.trim() !== "") {
+          socket.emit('gameTypeSelected', modalità, friend);
+          this.props.navigate("/selectGame/partita")
+        }
+        else{
+          notify("Username inserito non valido")
+        }
       }
     }
   }

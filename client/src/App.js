@@ -9,14 +9,17 @@ import {Routes, Route} from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ReactSession } from 'react-client-session';
+import { Helmet } from 'react-helmet';
 
 ReactSession.setStoreType("sessionStorage");           // Selezioniamo in che modo salvare le informazioni con ReactSession
 export const notify = (message) => toast(message);     // Funzione per la visualizzazione dei messaggi toast 
 
 function App() {
   return (
-    <>
-    <Routes> 
+    <><Helmet>
+          <title>{"BriscolaJS"}</title>
+      </Helmet>
+    <Routes>
       <Route path="/" element={<LoginPage/>} />
       <Route path="selectGame" element={<InitialPageWithRoute/>} />
       <Route path="selectGame/Partita" element={<GameField/>}  />
