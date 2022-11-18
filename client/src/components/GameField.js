@@ -32,7 +32,7 @@ export class GameField extends Component {
     punteggioAvversario: 0,
     idPartita: 0,
     visibilityMazzo: "hidden",
-    visibilityField: "hidden"
+    visibilityField: "hidden",
   };
 
 
@@ -41,6 +41,7 @@ export class GameField extends Component {
   handleClick = event => {      // Metodo serve per sapere quale elemento ha passato attivato evento click (non si riesce direttamente dall'elemento)
     var id = event.currentTarget.id     // Elemento sul quale è stato fatto il click
     //window.alert(id);
+    console.log(this.state.carteGiocate)
     if (this.state.secondaCartaTavola === "") {
       if (socket.connected) {    // verifichiamo di essere connessi prima di inviare il click
         switch (id) {
