@@ -11,7 +11,6 @@ import "./InitialPage.css";
 
 export class InitialPage extends Component {
   state = {
-    visibilitySpinner: "hidden",
     username :""
   }
 
@@ -32,40 +31,27 @@ export class InitialPage extends Component {
     socket.off("RichiestaInizioPartita").on("RichiestaInizioPartita", (userAmico) => {
       notify("Evento partita amico arrivato")
       var risposta = window.prompt(userAmico + " ti sta invitando per una partita, accetti? (si/no)")
-      notify(risposta)
       if (risposta.toLowerCase() === "si"){
-        //socket.emit("AggiornaID", username)
         socket.emit("RispostaPartitaAmico", risposta, userAmico)
         this.props.navigate("/selectGame/partita")
       }
     })
   }
-  
-
-  switchSpinnerState(){
-    if (this.state.visibilitySpinner === "hidden")
-        this.setState({visibilitySpinner:"visible"})
-    else            
-        this.setState({visibilitySpinner:"hidden"}) 
-  } 
 
   // Funzione per emettere evento bottone per scelta tipologia di partita da giocare
   gameTypeSelected(modalità){
     if (modalità !== "friend"){
        socket.emit('gameTypeSelected', modalità, null);
     }else{
-      var friend = window.prompt("Inserisci l'username dell'avversario")
-      if (friend.trim() === "" || friend === null){
-        notify("Username inserito non valido")
-      }else{
+      var friend = ""
+      friend = window.prompt("Inserisci l'username dell'avversario")
+      if (friend !== null) {
         socket.emit('gameTypeSelected', modalità, friend);
+        this.props.navigate("/selectGame/partita")
       }
-      
     }
-    
-    this.setState({visibilitySpinner:"visible"})   // TODO: rimuovere
   }
-  
+
   render (){
     return(
     <>
@@ -76,9 +62,9 @@ export class InitialPage extends Component {
         <p className='gameTypeLabel'>RANDOM PLAYER</p>
       </Link>
 
-      <Link to="./partita" className="btn btn-primary" id="FriendGameButton" onClick={() => this.gameTypeSelected("friend")}>
+      <div className="btn btn-primary" id="FriendGameButton" onClick={() => this.gameTypeSelected("friend")}>
         <p className='gameTypeLabel'>PLAY WITH A FRIEND</p>
-      </Link>
+      </div>
     </div>
     <div style={{height:"0px"}}>
         <ToastContainer/>

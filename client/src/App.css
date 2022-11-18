@@ -105,19 +105,3 @@ body > #root > div {
 .BiggerContainer .container {width:98%;max-width:none;padding:10px;height: 100%;}
 
 
-
-/*
-// USATI PER IMMAGINI CENTRATE CARTE DEL CAMPO DI GIOCO 
-// SOURCE: https://stackoverflow.com/questions/14142378/how-can-i-fill-a-div-with-an-image-while-keeping-it-proportional
-.fill {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden
-}
-.fill img {
-  flex-shrink: 0;
-  min-width: 100%;
-  min-height: 100%
-}
-*/

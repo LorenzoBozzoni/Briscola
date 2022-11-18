@@ -261,7 +261,7 @@ io.on("connection", (socket) =>{
               partite[i].decrementManiFinali()
               setTimeout(() => {
               io.to(socket.id).emit("fineMano", JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))
-              io.to(partite[i].getAvversario(socket.id)).emit("fineMano",  JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))  //TODO: sostituire con pop()
+              io.to(partite[i].getAvversario(socket.id)).emit("fineMano",  JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta())) 
               }, 1000)
             }
             
@@ -269,7 +269,7 @@ io.on("connection", (socket) =>{
             // Timeout per vedere le carte prima di fare la giocata successiva
           setTimeout(() => {
             io.to(socket.id).emit("fineMano", JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))
-            io.to(partite[i].getAvversario(socket.id)).emit("fineMano",  JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))  //TODO: sostituire con pop()
+            io.to(partite[i].getAvversario(socket.id)).emit("fineMano",  JSON.stringify(partite[i]), JSON.stringify(partite[i].pescaCarta()))  
           }, 1000)
           }
           // Svuota CartaInTavola
@@ -372,7 +372,6 @@ if(multi.find(item => item === (id).toString)){
   */
 }
 
-// Cerca nell'array users (TODO: non passare come parametro l'array) l'id e ritorna lo username associato
 function getUserFromId(array, id){
   for (let index = 0; index < array.length; index++) {
     if (array[index].id === id){

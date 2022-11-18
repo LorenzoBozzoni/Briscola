@@ -101,7 +101,7 @@ export class GameField extends Component {
       this.setState({ secondaCartaAvversario: cartaCoperta })
       this.setState({ terzaCartaAvversario: cartaCoperta })
 
-      // Punteggio iniziale, 0 - 0 TODO: statico?
+      // Punteggio iniziale, 0 - 0
       if (socket.id === partitaJSON.IdGiocatore1) {
         this.setState({ punteggioMio: JSON.stringify(partitaJSON.Punteggio1) })
         this.setState({ punteggioAvversario: JSON.stringify(partitaJSON.Punteggio2) })
@@ -121,9 +121,6 @@ export class GameField extends Component {
 
       // Evento che viene scatenato quando si preme il pulsante "indietro" del browser
       window.addEventListener('popstate', (event) => {
-        if (this.state.idPartita !== 0) {
-          //notify("La partita verrà conclusa")
-        }
         socket.emit("AggiornaID", username)
         socket.emit("abbandonaPartita")
       });
@@ -254,7 +251,7 @@ export class GameField extends Component {
             immSecondaCartaMia: require("../Images/Napoletane/" + numeroCarta + ".jpg"),
             secondaCartaMia: cartaPescata
           })
-        } else if (this.state.terzaCartaMia === "") {      // TODO: convertire in else if?
+        } else if (this.state.terzaCartaMia === "") {     
           this.setState({
             immTerzaCartaMia: require("../Images/Napoletane/" + numeroCarta + ".jpg"),
             terzaCartaMia: cartaPescata
@@ -269,7 +266,7 @@ export class GameField extends Component {
           this.setState({
             secondaCartaAvversario: cartaCoperta
           })
-        } else {      // TODO: convertire in else if?
+        } else if (this.state.terzaCartaAvversario === ""){      
           this.setState({
             terzaCartaAvversario: cartaCoperta
           })
