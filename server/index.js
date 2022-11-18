@@ -9,7 +9,7 @@ const {MongoClient} = require("mongodb");
 const { stringify } = require("querystring");
 const { instrument } = require("@socket.io/admin-ui"); 
 const { SocketAddress } = require("net");
-const { emit } = require("process");
+const { emit, exit } = require("process");
 
 // Dichiarazione Cross-Origin-Resource-Sharing
 app.use(cors({origin: ["https://admin.socket.io/", "http://localhost:3000"]}));
@@ -149,7 +149,13 @@ io.on("connection", (socket) =>{
 
   socket.on("cartaGiocataReq", (idPartita, cartaGiocata) => {
     // carta giocata è una stringa contentente un json. Deve essere convertita con JSON.parse per poter accedere alle sue proprietà
-    cartaGiocata = JSON.parse(cartaGiocata)
+    try {
+      cartaGiocata = JSON.parse(cartaGiocata)
+    } catch (error) {
+      io.to(socket.id).emit("cartaGiocataRes", false)
+      return
+    }
+    
     console.log(cartaGiocata)
     // Scorri tutte le partite in corso 
     for (let i = 0; i < partite.length; i++) {
