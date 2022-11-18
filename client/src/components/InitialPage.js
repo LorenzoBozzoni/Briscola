@@ -36,10 +36,7 @@ export class InitialPage extends Component {
       if (risposta.toLowerCase() === "si"){
         //socket.emit("AggiornaID", username)
         socket.emit("RispostaPartitaAmico", risposta, userAmico)
-        //const navigate = useHook()
         this.props.navigate("/selectGame/partita")
-        //document.location.href = document.location + "/partita"; 
-        window.alert("bloccante")
       }
     })
   }

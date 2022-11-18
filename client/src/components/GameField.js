@@ -283,7 +283,18 @@ export class GameField extends Component {
     })
 
 
-    socket.off("finePartita").on("finePartita", (vincitore) => {
+    socket.off("finePartita").on("finePartita", (vincitore, partita) => {
+      var partitaJSON = JSON.parse(partita.substring(partita.indexOf("{")))
+      // Aggiornamento punteggio
+      if (socket.id === partitaJSON.IdGiocatore1) {
+        this.setState({ punteggioMio: JSON.stringify(partitaJSON.Punteggio1) })
+        this.setState({ punteggioAvversario: JSON.stringify(partitaJSON.Punteggio2) })
+      } else {
+        // inversione per avere visuale relativa a giocatore, altrimenti tutti e due vedono uguale
+        this.setState({ punteggioAvversario: JSON.stringify(partitaJSON.Punteggio1) })
+        this.setState({ punteggioMio: JSON.stringify(partitaJSON.Punteggio2) })
+      }
+
       // Rimuoviamo le ultime carte giocate dalla tavola
       this.setState({ primaCartaTavola: "" })
       this.setState({ secondaCartaTavola: "" })

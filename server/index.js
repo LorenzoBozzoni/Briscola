@@ -252,8 +252,8 @@ io.on("connection", (socket) =>{
               }else{
                 vincitore = partite[i].getIdGiocatore2()
               }
-              io.to(socket.id).emit("finePartita", vincitore)
-              io.to(partite[i].getAvversario(socket.id)).emit("finePartita", vincitore)
+              io.to(socket.id).emit("finePartita", vincitore, JSON.stringify(partite[i]))
+              io.to(partite[i].getAvversario(socket.id)).emit("finePartita", vincitore, JSON.stringify(partite[i]))
               // Gestione di fine partita
               partite.splice(i, 1)   // Rimozione della partita dalla lista delle partite in corso
               break
