@@ -155,8 +155,6 @@ io.on("connection", (socket) =>{
       io.to(socket.id).emit("cartaGiocataRes", false)
       return
     }
-    
-    console.log(cartaGiocata)
     // Scorri tutte le partite in corso 
     for (let i = 0; i < partite.length; i++) {
       if ((partite[i].getIdPartita()).toString() === idPartita){
@@ -234,8 +232,7 @@ io.on("connection", (socket) =>{
           }else{
             partite[i].addToPunteggio2(primaCartaGiocata.getValore() + secondaCartaGiocata.getValore())
           }
-          
-          console.log("Numero di carte rimanenti ---------------------------> ",partite[i].getCarteRimanenti())
+        
 
           // Ritorno messaggio e aggiornamento + carta pescata automaticamente per entrambi i giocatori (in ordine)
           if (partite[i].getCarteRimanenti() === 1){

@@ -59,8 +59,6 @@ class Mazzo {
                 this.mazzo[(j+(i*10))] = new Carta(valore, j+1, seme, false, ImagePath)       // di default non impostiamo una briscola
             }
         }
-        var myString = JSON.stringify(this.mazzo)
-        console.log(myString)
     }
     
     pop() {
